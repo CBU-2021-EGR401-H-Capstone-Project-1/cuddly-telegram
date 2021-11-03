@@ -4,6 +4,7 @@
 /// Copyright (c) 2021 David Barsamian.
 ///
 
+// https://github.com/quilljs/delta/blob/main/src/Op.ts
 enum OperationKey {
   insert,
   delete,
@@ -13,9 +14,9 @@ enum OperationKey {
 /// An operation performed on a document.
 class Op {
   final OperationKey key;
-  final int? length;
-  final Object? data;
-  final Map<String, dynamic>? attributeMap;
+  int? length;
+  Object? data;
+  Map<String, dynamic>? attributeMap;
 
   Op({
     required this.key,
