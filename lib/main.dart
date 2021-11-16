@@ -9,8 +9,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Hello, world'),
+    return const MaterialApp(
+      title: 'Journal',
+      home: Center(
+        child: Text('Journal'),
+      ),
     );
   }
 }
