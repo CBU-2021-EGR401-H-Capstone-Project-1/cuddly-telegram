@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 
 import 'package:cuddly_telegram/screens/editor_screen.dart';
 
@@ -18,24 +15,11 @@ class MyApp extends StatelessWidget {
       EditorScreen.routeName: (ctx) => EditorScreen(),
     };
 
-    return Platform.isIOS
-        ? CupertinoApp(
-            title: 'Journal',
-            theme: CupertinoThemeData(
-              barBackgroundColor: Colors.teal[100],
-              brightness: Brightness.light,
-              primaryColor: Colors.purple,
-              primaryContrastingColor: Colors.white,
-              scaffoldBackgroundColor: Colors.grey[200],
-            ),
-            routes: routes,
-            initialRoute: EditorScreen.routeName,
-          )
-        : MaterialApp(
-            title: 'Journal',
-            theme: ThemeData.from(colorScheme: const ColorScheme.light()),
-            routes: routes,
-            initialRoute: EditorScreen.routeName,
-          );
+    return MaterialApp(
+      title: 'Journal',
+      theme: ThemeData.from(colorScheme: const ColorScheme.light()),
+      routes: routes,
+      initialRoute: EditorScreen.routeName,
+    );
   }
 }
