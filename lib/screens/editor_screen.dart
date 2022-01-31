@@ -4,7 +4,7 @@ import 'package:flutter_quill/flutter_quill.dart' as quill;
 class EditorScreen extends StatelessWidget {
   EditorScreen({Key? key}) : super(key: key);
 
-  static const routeName = '/';
+  static const routeName = '/editor';
 
   final quill.QuillController _controller = quill.QuillController(
     document: quill.Document(),
@@ -12,8 +12,7 @@ class EditorScreen extends StatelessWidget {
     keepStyleOnNewLine: false,
   );
   final FocusNode _focusNode = FocusNode();
-
-  String journalName = "";
+  final String journalName = "";
 
   Widget get body {
     return Padding(
