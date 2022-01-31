@@ -24,7 +24,6 @@ class EditorScreen extends StatelessWidget {
             clipBehavior: Clip.none,
             child: quill.QuillToolbar.basic(
               controller: _controller,
-              locale: const Locale('en', 'US'),
             ),
           ),
           const SizedBox(
