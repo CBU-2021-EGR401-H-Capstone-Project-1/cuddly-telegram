@@ -20,17 +20,13 @@ class MyApp extends StatelessWidget {
       EditorScreen.routeName: (ctx) => EditorScreen(),
     };
 
-    return FutureBuilder<Map<String, dynamic>>(
-      initialData: const {},
-      future: IOHelper.readDocumentStore(),
-      builder: (context, snapshot) => ChangeNotifierProvider(
-        create: (context) => DocumentStore.fromJson(snapshot.data ?? {}),
-        child: MaterialApp(
-          title: 'Journal',
-          theme: ThemeData.from(colorScheme: const ColorScheme.light()),
-          routes: routes,
-          initialRoute: FileBrowserScreen.routeName,
-        ),
+    return ChangeNotifierProvider(
+      create: (context) => DocumentStore([]),
+      child: MaterialApp(
+        title: 'Journal',
+        theme: ThemeData.from(colorScheme: const ColorScheme.light()),
+        routes: routes,
+        initialRoute: FileBrowserScreen.routeName,
       ),
     );
   }
