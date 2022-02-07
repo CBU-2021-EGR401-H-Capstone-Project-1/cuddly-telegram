@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:cuddly_telegram/model/document_store.dart';
+import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/file_browser_screen.dart';
 import 'package:cuddly_telegram/utility/io_helper.dart';
 import 'package:cuddly_telegram/screens/editor_screen.dart';
@@ -21,12 +21,21 @@ class MyApp extends StatelessWidget {
     };
 
     return ChangeNotifierProvider(
-      create: (context) => DocumentStore([]),
-      child: MaterialApp(
-        title: 'Journal',
-        theme: ThemeData.from(colorScheme: const ColorScheme.light()),
-        routes: routes,
-        initialRoute: FileBrowserScreen.routeName,
+      create: (context) => JournalStore({}),
+      child: FutureBuilder<JournalStore?>(
+        future: IOHelper.readDocumentStore(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            print("Documents updated");
+            Provider.of<JournalStore>(context, listen: true).replaceAll(snapshot.data!.journals);
+          }
+          return MaterialApp(
+            title: 'Journal',
+            theme: ThemeData.from(colorScheme: const ColorScheme.light()),
+            routes: routes,
+            initialRoute: FileBrowserScreen.routeName,
+          );
+        }
       ),
     );
   }

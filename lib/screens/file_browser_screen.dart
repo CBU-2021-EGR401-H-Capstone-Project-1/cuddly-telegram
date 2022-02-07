@@ -1,8 +1,9 @@
 import 'dart:math';
 
-import 'package:cuddly_telegram/model/document_store.dart';
+import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/editor_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:provider/provider.dart';
 
 class FileBrowserScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class FileBrowserScreen extends StatefulWidget {
 
 class _FileBrowserScreenState extends State<FileBrowserScreen> {
   Widget get body {
-    return Consumer<DocumentStore>(
+    return Consumer<JournalStore>(
       builder: (context, docStore, child) => GridView.builder(
         padding: const EdgeInsets.all(8),
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -55,6 +56,13 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
       ),
       body: SafeArea(
         child: body,
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.of(context)
+              .pushNamed(EditorScreen.routeName, arguments: quill.Document());
+        },
       ),
     );
   }

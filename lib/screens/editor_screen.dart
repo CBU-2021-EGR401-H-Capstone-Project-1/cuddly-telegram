@@ -1,20 +1,16 @@
+import 'package:cuddly_telegram/model/journal.dart';
+import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:provider/provider.dart';
 
 class EditorScreen extends StatelessWidget {
   EditorScreen({Key? key}) : super(key: key);
 
   static const routeName = '/editor';
-
-  final quill.QuillController _controller = quill.QuillController(
-    document: quill.Document(),
-    selection: const TextSelection.collapsed(offset: 0),
-    keepStyleOnNewLine: false,
-  );
   final FocusNode _focusNode = FocusNode();
-  final String journalName = "";
 
-  Widget get body {
+  Widget body(quill.QuillController controller) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -23,7 +19,7 @@ class EditorScreen extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             clipBehavior: Clip.none,
             child: quill.QuillToolbar.basic(
-              controller: _controller,
+              controller: controller,
             ),
           ),
           const SizedBox(
@@ -31,7 +27,7 @@ class EditorScreen extends StatelessWidget {
           ),
           Expanded(
             child: quill.QuillEditor(
-              controller: _controller,
+              controller: controller,
               padding: const EdgeInsets.all(0),
               readOnly: false,
               scrollController: ScrollController(),
@@ -48,26 +44,57 @@ class EditorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var journal = ModalRoute.of(context)?.settings.arguments as Journal;
+    final controller = quill.QuillController(
+        document: journal.document,
+        selection: const TextSelection.collapsed(offset: 0),
+        keepStyleOnNewLine: false,
+      );
     return Scaffold(
       appBar: AppBar(
-        title: Text(journalName),
+        title: Text(journal.title),
         actions: [
           DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               icon: Icon(Icons.more_vert_rounded,
                   color: Theme.of(context).primaryIconTheme.color),
               onChanged: (newValue) {
+                if (newValue == 'save') {
+                  Provider.of<JournalStore>(context, listen: false)
+                      .add(journal);
+                }
                 if (newValue == 'calendar') {
                   print('Calendar pressed');
                 }
                 if (newValue == 'delete') {
-                  print('Delete pressed');
+                  if (Provider.of<JournalStore>(context, listen: false)
+                          .journals
+                          .contains(controller.document) &&
+                      Provider.of<JournalStore>(context)
+                          .remove(journal)) {}
+                  Navigator.of(context).pop();
                 }
                 if (newValue == 'debug') {
-                  print(_controller.document.toDelta().toJson().toString());
+                  print(controller.document.toDelta().toJson().toString());
                 }
               },
               items: [
+                DropdownMenuItem(
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.save,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Save",
+                        style: Theme.of(context).textTheme.button,
+                      )
+                    ],
+                  ),
+                  value: 'save',
+                ),
                 DropdownMenuItem(
                   child: Row(
                     children: [
@@ -111,7 +138,7 @@ class EditorScreen extends StatelessWidget {
           )
         ],
       ),
-      body: SafeArea(child: body),
+      body: SafeArea(child: body(controller)),
     );
   }
 }
