@@ -20,8 +20,9 @@ class JournalStore extends ChangeNotifier {
   /// Replaces all of the current documents with a new list of documents.
   /// This is primarily used for updating the document store after an IO read.
   void replaceAll(Set<Journal> journals) {
-    journals.clear();
-    journals.addAll(journals);
+    this.journals.clear();
+    this.journals.addAll(journals);
+    print("Journals Replaced: $journals");
   }
 
   /// Adds a document to the store, writes the store to disk, and notifies all listeners.

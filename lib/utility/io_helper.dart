@@ -32,6 +32,7 @@ class IOHelper {
     }
     // encrypt
     final json = journalStore.toJson();
+    print("Write: $json");
     return await file.writeAsString(jsonEncode(json));
   }
 
@@ -43,7 +44,8 @@ class IOHelper {
       if (fileExists) {
         // decrypt
         final contents = await file.readAsString();
-        return jsonDecode(contents);
+        print("Read: $contents");
+        return JournalStore.fromJson(jsonDecode(contents));
       } else {
         await file.create();
         return JournalStore({});

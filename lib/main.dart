@@ -20,22 +20,35 @@ class MyApp extends StatelessWidget {
       EditorScreen.routeName: (ctx) => EditorScreen(),
     };
 
+    // return ChangeNotifierProvider(
+    //   create: (context) => JournalStore({}),
+    //   child: FutureBuilder<JournalStore>(
+    //     future: IOHelper.readJournalStore(),
+    //     builder: (context, snapshot) {
+    //       if (snapshot.connectionState == ConnectionState.done &&
+    //           snapshot.hasData) {
+    //         print("Documents updated: ${snapshot.data.toString()}");
+    //         print("Data: ${snapshot.data!.journals.toString()}");
+    //         Provider.of<JournalStore>(context, listen: true)
+    //             .replaceAll(snapshot.data!.journals);
+    //       }
+    //       return MaterialApp(
+    //         title: 'Journal',
+    //         theme: ThemeData.from(colorScheme: const ColorScheme.light()),
+    //         routes: routes,
+    //         initialRoute: FileBrowserScreen.routeName,
+    //       );
+    //     },
+    //   ),
+    // );
+
     return ChangeNotifierProvider(
       create: (context) => JournalStore({}),
-      child: FutureBuilder<JournalStore?>(
-        future: IOHelper.readJournalStore(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            print("Documents updated");
-            Provider.of<JournalStore>(context, listen: true).replaceAll(snapshot.data!.journals);
-          }
-          return MaterialApp(
-            title: 'Journal',
-            theme: ThemeData.from(colorScheme: const ColorScheme.light()),
-            routes: routes,
-            initialRoute: FileBrowserScreen.routeName,
-          );
-        }
+      child: MaterialApp(
+        title: 'Journal',
+        theme: ThemeData.from(colorScheme: const ColorScheme.light()),
+        routes: routes,
+        initialRoute: FileBrowserScreen.routeName,
       ),
     );
   }
