@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => JournalStore({}),
       child: FutureBuilder<JournalStore?>(
-        future: IOHelper.readDocumentStore(),
+        future: IOHelper.readJournalStore(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             print("Documents updated");

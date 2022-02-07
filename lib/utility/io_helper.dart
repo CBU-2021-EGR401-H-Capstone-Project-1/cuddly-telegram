@@ -9,15 +9,17 @@ import 'package:permission_handler/permission_handler.dart';
 class IOHelper {
   static Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
+    print(directory);
     return directory.path;
   }
 
   static Future<File> get _localFile async {
     final path = await _localPath;
+    print(path);
     return File('$path/documents.dat');
   }
 
-  static Future<File> writeDocumentStore(JournalStore documentStore) async {
+  static Future<File> writeJournalStore(JournalStore journalStore) async {
     // TODO Encrypt file
     final file = await _localFile;
     final fileExists = await file.exists();
@@ -29,11 +31,11 @@ class IOHelper {
       }
     }
     // encrypt
-    final json = documentStore.toJson();
+    final json = journalStore.toJson();
     return await file.writeAsString(jsonEncode(json));
   }
 
-  static Future<JournalStore> readDocumentStore() async {
+  static Future<JournalStore> readJournalStore() async {
     // TODO Encrypt file
     try {
       final file = await _localFile;

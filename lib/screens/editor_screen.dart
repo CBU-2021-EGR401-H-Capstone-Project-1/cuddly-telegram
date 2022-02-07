@@ -1,5 +1,6 @@
 import 'package:cuddly_telegram/model/journal.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
+import 'package:cuddly_telegram/utility/io_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:provider/provider.dart';
@@ -46,10 +47,10 @@ class EditorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var journal = ModalRoute.of(context)?.settings.arguments as Journal;
     final controller = quill.QuillController(
-        document: journal.document,
-        selection: const TextSelection.collapsed(offset: 0),
-        keepStyleOnNewLine: false,
-      );
+      document: journal.document,
+      selection: const TextSelection.collapsed(offset: 0),
+      keepStyleOnNewLine: false,
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text(journal.title),
@@ -62,6 +63,8 @@ class EditorScreen extends StatelessWidget {
                 if (newValue == 'save') {
                   Provider.of<JournalStore>(context, listen: false)
                       .add(journal);
+                  IOHelper.writeJournalStore(
+                      Provider.of<JournalStore>(context, listen: false));
                 }
                 if (newValue == 'calendar') {
                   print('Calendar pressed');
@@ -70,8 +73,7 @@ class EditorScreen extends StatelessWidget {
                   if (Provider.of<JournalStore>(context, listen: false)
                           .journals
                           .contains(controller.document) &&
-                      Provider.of<JournalStore>(context)
-                          .remove(journal)) {}
+                      Provider.of<JournalStore>(context).remove(journal)) {}
                   Navigator.of(context).pop();
                 }
                 if (newValue == 'debug') {
