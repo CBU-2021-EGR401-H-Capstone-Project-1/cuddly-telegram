@@ -38,8 +38,10 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  Navigator.of(context).pushNamed(EditorScreen.routeName,
-                      arguments: journalStore.journals.elementAt(index));
+                  Navigator.of(context).pushNamed(
+                    EditorScreen.routeName,
+                    arguments: journalStore.journals.elementAt(index),
+                  );
                 },
                 child: Center(
                   child: Text(journalStore.journals.elementAt(index).title),

@@ -61,8 +61,7 @@ class EditorScreen extends StatelessWidget {
                   color: Theme.of(context).primaryIconTheme.color),
               onChanged: (newValue) {
                 if (newValue == 'save') {
-                  Provider.of<JournalStore>(context, listen: false)
-                      .add(journal);
+                  Provider.of<JournalStore>(context, listen: true).add(journal);
                   IOHelper.writeJournalStore(
                       Provider.of<JournalStore>(context, listen: false));
                 }
@@ -70,7 +69,7 @@ class EditorScreen extends StatelessWidget {
                   print('Calendar pressed');
                 }
                 if (newValue == 'delete') {
-                  if (Provider.of<JournalStore>(context, listen: false)
+                  if (Provider.of<JournalStore>(context, listen: true)
                           .journals
                           .contains(controller.document) &&
                       Provider.of<JournalStore>(context).remove(journal)) {}
