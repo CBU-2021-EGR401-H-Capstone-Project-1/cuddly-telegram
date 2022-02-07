@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cuddly_telegram/model/journal.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/editor_screen.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class FileBrowserScreen extends StatefulWidget {
 class _FileBrowserScreenState extends State<FileBrowserScreen> {
   Widget get body {
     return Consumer<JournalStore>(
-      builder: (context, docStore, child) => GridView.builder(
+      builder: (context, journalStore, child) => GridView.builder(
         padding: const EdgeInsets.all(8),
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 100,
@@ -26,7 +27,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
           mainAxisSpacing: 8,
           childAspectRatio: 1 / sqrt(2), // A4 paper
         ),
-        itemCount: docStore.count,
+        itemCount: journalStore.count,
         itemBuilder: (BuildContext ctx, int index) {
           return Card(
             shape: RoundedRectangleBorder(
@@ -35,10 +36,10 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
             child: InkWell(
               borderRadius: BorderRadius.circular(12),
               onTap: () {
-                Navigator.of(context).pushNamed(EditorScreen.routeName);
+                Navigator.of(context).pushNamed(EditorScreen.routeName, arguments: journalStore.journals.elementAt(index));
               },
-              child: const Center(
-                child: Text("Document"),
+              child: Center(
+                child: Text(journalStore.journals.elementAt(index).title),
               ),
             ),
             color: Colors.yellow.shade100,
@@ -61,7 +62,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
         child: const Icon(Icons.add),
         onPressed: () {
           Navigator.of(context)
-              .pushNamed(EditorScreen.routeName, arguments: quill.Document());
+              .pushNamed(EditorScreen.routeName, arguments: Journal(title: "Journal", document: quill.Document()));
         },
       ),
     );

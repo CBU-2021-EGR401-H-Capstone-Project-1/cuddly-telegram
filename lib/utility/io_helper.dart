@@ -44,11 +44,11 @@ class IOHelper {
         return jsonDecode(contents);
       } else {
         await file.create();
-        return JournalStore([]);
+        return JournalStore({});
       }
     } catch (e) {
       print(e);
-      return JournalStore([]);
+      return JournalStore({});
     }
   }
 }
