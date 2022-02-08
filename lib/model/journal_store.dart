@@ -1,6 +1,5 @@
 import 'package:cuddly_telegram/model/journal.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:json_annotation/json_annotation.dart';
 
 part 'journal_store.g.dart';
@@ -23,6 +22,7 @@ class JournalStore extends ChangeNotifier {
     this.journals.clear();
     this.journals.addAll(journals);
     print("Journals Replaced: $journals");
+    // notifyListeners();
   }
 
   /// Adds a document to the store, writes the store to disk, and notifies all listeners.
@@ -31,13 +31,16 @@ class JournalStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Removes a document from the store. If the removal was successful, then
-  /// the store is written to disk, listeners are notified, and `true` is returned.
-  /// If the removal fails, then `false` is returned.
-  bool remove(Journal journal) {
-    final success = journals.remove(journal);
-    if (success) notifyListeners();
-    return success;
+  /// Removes a document from the store and notifies listeners.
+  void remove(Journal journal) {
+    journals.removeWhere((element) => element.id == journal.id);
+    notifyListeners();
+  }
+
+  // TODO FOR DEBUGGING ONLY
+  void removeAll() {
+    journals.clear();
+    notifyListeners();
   }
 
   factory JournalStore.fromJson(Map<String, dynamic> json) =>

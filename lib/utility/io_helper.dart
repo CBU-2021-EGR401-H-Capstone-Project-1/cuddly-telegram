@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cuddly_telegram/model/journal_store.dart';
-import 'package:flutter_quill/flutter_quill.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class IOHelper {
   static Future<String> get _localPath async {

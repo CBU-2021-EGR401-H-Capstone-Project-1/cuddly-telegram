@@ -19,38 +19,42 @@ class FileBrowserScreen extends StatefulWidget {
 
 class _FileBrowserScreenState extends State<FileBrowserScreen> {
   Widget get body {
+    final itemCount =
+        Provider.of<JournalStore>(context, listen: true).journals.length;
+    final gridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
+      maxCrossAxisExtent: 100,
+      crossAxisSpacing: 8,
+      mainAxisSpacing: 8,
+      childAspectRatio: 1 / sqrt(2), // A4 paper
+    );
     return SafeArea(
-      child: Consumer<JournalStore>(
-        builder: (context, journalStore, child) => GridView.builder(
-          padding: const EdgeInsets.all(8),
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 100,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 1 / sqrt(2), // A4 paper
-          ),
-          itemCount: journalStore.count,
-          itemBuilder: (BuildContext ctx, int index) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  Navigator.of(context).pushNamed(
-                    EditorScreen.routeName,
-                    arguments: journalStore.journals.elementAt(index),
-                  );
-                },
-                child: Center(
-                  child: Text(journalStore.journals.elementAt(index).title),
-                ),
-              ),
-              color: Colors.yellow.shade100,
-            );
-          },
-        ),
+      child: GridView.builder(
+        gridDelegate: gridDelegate,
+        itemCount: itemCount,
+        itemBuilder: (context, index) {
+          return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            color: Colors.grey.shade100,
+            child: Consumer<JournalStore>(
+              builder: ((context, journalStore, child) {
+                return InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () {
+                    Navigator.of(context).pushNamed(
+                      EditorScreen.routeName,
+                      arguments: journalStore.journals.elementAt(index),
+                    );
+                  },
+                  child: Center(
+                    child: Text(journalStore.journals.elementAt(index).title),
+                  ),
+                );
+              }),
+            ),
+          );
+        },
       ),
     );
   }
@@ -67,7 +71,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done &&
               snapshot.hasData) {
-            Provider.of<JournalStore>(context, listen: true)
+            Provider.of<JournalStore>(context, listen: false)
                 .replaceAll(snapshot.data!.journals);
             print("JournalStore updated from snapshot.");
           }
