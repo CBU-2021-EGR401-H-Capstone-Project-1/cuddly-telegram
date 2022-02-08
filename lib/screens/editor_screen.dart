@@ -5,10 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:provider/provider.dart';
 
-class EditorScreen extends StatelessWidget {
-  EditorScreen({Key? key}) : super(key: key);
+class EditorScreen extends StatefulWidget {
+  const EditorScreen({Key? key}) : super(key: key);
 
   static const routeName = '/editor';
+
+  @override
+  State<EditorScreen> createState() => _EditorScreenState();
+}
+
+class _EditorScreenState extends State<EditorScreen> {
   final FocusNode _focusNode = FocusNode();
 
   Widget body(quill.QuillController controller) {
@@ -76,8 +82,50 @@ class EditorScreen extends StatelessWidget {
                       Provider.of<JournalStore>(context, listen: false));
                   Navigator.of(context).pop();
                 }
-                if (newValue == 'debug') {
-                  print(controller.document.toDelta().toJson().toString());
+                if (newValue == 'editTitle') {
+                  final titleEditorController =
+                      TextEditingController(text: journal.title);
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    useSafeArea: true,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text(
+                          'Edit Title',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        content: TextField(
+                          autocorrect: false,
+                          controller: titleEditorController,
+                          maxLength: 20,
+                          maxLines: 1,
+                          textCapitalization: TextCapitalization.sentences,
+                        ),
+                        elevation: 6,
+                        actions: [
+                          TextButton(
+                            child: const Text('Cancel'),
+                            onPressed: () => Navigator.pop(context, 'Cancel'),
+                          ),
+                          TextButton(
+                            child: const Text('OK'),
+                            onPressed: () {
+                              setState(() {
+                                journal.title = titleEditorController.text;
+                              });
+                              final journalStore = Provider.of<JournalStore>(
+                                  context,
+                                  listen: false);
+                              journalStore.update(journal);
+                              IOHelper.writeJournalStore(journalStore);
+                              Navigator.pop(context, 'OK');
+                            },
+                          )
+                        ],
+                      );
+                    },
+                  );
                 }
               },
               items: [
@@ -126,14 +174,13 @@ class EditorScreen extends StatelessWidget {
                 DropdownMenuItem(
                   child: Row(
                     children: [
-                      Icon(Icons.bug_report,
-                          color: Theme.of(context).primaryColor),
+                      Icon(Icons.edit, color: Theme.of(context).primaryColor),
                       const SizedBox(width: 8),
-                      Text('Print JSON',
+                      Text('Edit Title',
                           style: Theme.of(context).textTheme.button),
                     ],
                   ),
-                  value: 'debug',
+                  value: 'editTitle',
                 )
               ],
             ),

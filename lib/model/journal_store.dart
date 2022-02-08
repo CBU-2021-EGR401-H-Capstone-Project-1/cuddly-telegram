@@ -8,16 +8,16 @@ part 'journal_store.g.dart';
 class JournalStore extends ChangeNotifier {
   JournalStore(this.journals);
 
-  /// An internal store of the documents. Do not modify this directly.
+  /// An internal store of the journals. Do not modify this directly.
   final Set<Journal> journals;
 
-  /// The number of documents in the store.
+  /// The number of journals in the store.
   int get count {
     return journals.length;
   }
 
-  /// Replaces all of the current documents with a new list of documents.
-  /// This is primarily used for updating the document store after an IO read.
+  /// Replaces all of the current journals with a new list of journals.
+  /// This is primarily used for updating the journal store after an IO read.
   void replaceAll(Set<Journal> journals) {
     this.journals.clear();
     this.journals.addAll(journals);
@@ -25,21 +25,22 @@ class JournalStore extends ChangeNotifier {
     // notifyListeners();
   }
 
-  /// Adds a document to the store, writes the store to disk, and notifies all listeners.
+  /// Adds a journal to the store, writes the store to disk, and notifies all listeners.
   void add(Journal journal) {
     journals.add(journal);
     notifyListeners();
   }
 
-  /// Removes a document from the store and notifies listeners.
+  /// Removes a journal from the store and notifies listeners.
   void remove(Journal journal) {
     journals.removeWhere((element) => element.id == journal.id);
     notifyListeners();
   }
 
-  // TODO FOR DEBUGGING ONLY
-  void removeAll() {
-    journals.clear();
+  /// Replaces a journal in the store with one that has a matching ID.
+  void update(Journal journal) {
+    journals.removeWhere((element) => element.id == journal.id);
+    journals.add(journal);
     notifyListeners();
   }
 

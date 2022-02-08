@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/file_browser_screen.dart';
-import 'package:cuddly_telegram/utility/io_helper.dart';
 import 'package:cuddly_telegram/screens/editor_screen.dart';
 
 void main() {
@@ -17,30 +16,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     var routes = {
       FileBrowserScreen.routeName: (ctx) => const FileBrowserScreen(),
-      EditorScreen.routeName: (ctx) => EditorScreen(),
+      EditorScreen.routeName: (ctx) => const EditorScreen(),
     };
-
-    // return ChangeNotifierProvider(
-    //   create: (context) => JournalStore({}),
-    //   child: FutureBuilder<JournalStore>(
-    //     future: IOHelper.readJournalStore(),
-    //     builder: (context, snapshot) {
-    //       if (snapshot.connectionState == ConnectionState.done &&
-    //           snapshot.hasData) {
-    //         print("Documents updated: ${snapshot.data.toString()}");
-    //         print("Data: ${snapshot.data!.journals.toString()}");
-    //         Provider.of<JournalStore>(context, listen: true)
-    //             .replaceAll(snapshot.data!.journals);
-    //       }
-    //       return MaterialApp(
-    //         title: 'Journal',
-    //         theme: ThemeData.from(colorScheme: const ColorScheme.light()),
-    //         routes: routes,
-    //         initialRoute: FileBrowserScreen.routeName,
-    //       );
-    //     },
-    //   ),
-    // );
 
     return ChangeNotifierProvider(
       create: (context) => JournalStore({}),

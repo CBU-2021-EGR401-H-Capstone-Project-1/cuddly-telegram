@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:cuddly_telegram/model/journal.dart';
@@ -39,16 +40,21 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
             color: Colors.grey.shade100,
             child: Consumer<JournalStore>(
               builder: ((context, journalStore, child) {
+                final sortedJournals = SplayTreeSet<Journal>.from(
+                  journalStore.journals,
+                  (journal1, journal2) =>
+                      journal1.dateCreated.compareTo(journal2.dateCreated),
+                );
                 return InkWell(
                   borderRadius: BorderRadius.circular(12),
                   onTap: () {
                     Navigator.of(context).pushNamed(
                       EditorScreen.routeName,
-                      arguments: journalStore.journals.elementAt(index),
+                      arguments: sortedJournals.elementAt(index),
                     );
                   },
                   child: Center(
-                    child: Text(journalStore.journals.elementAt(index).title),
+                    child: Text(sortedJournals.elementAt(index).title),
                   ),
                 );
               }),
