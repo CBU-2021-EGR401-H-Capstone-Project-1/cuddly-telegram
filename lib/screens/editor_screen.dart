@@ -103,6 +103,7 @@ class _EditorScreenState extends State<EditorScreen> {
                           textCapitalization: TextCapitalization.sentences,
                         ),
                         elevation: 6,
+                        actionsAlignment: MainAxisAlignment.spaceBetween,
                         actions: [
                           TextButton(
                             child: const Text('Cancel'),
@@ -187,7 +188,50 @@ class _EditorScreenState extends State<EditorScreen> {
           )
         ],
       ),
-      body: SafeArea(child: body(controller)),
+      body: WillPopScope(
+        onWillPop: () async {
+          await showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text(
+                    'Save?',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  content: Text(
+                    'Do you want to save your journal?',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  actionsAlignment: MainAxisAlignment.spaceBetween,
+                  actions: [
+                    TextButton(
+                      child: Text('Discard Changes',
+                          style: Theme.of(context)
+                              .textTheme
+                              .button
+                              ?.copyWith(color: Colors.red)),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    TextButton(
+                      child: const Text('Save'),
+                      onPressed: () {
+                        final journalStore =
+                            Provider.of<JournalStore>(context, listen: false);
+                        journalStore.add(journal);
+                        IOHelper.writeJournalStore(journalStore);
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                );
+              });
+          return true;
+        },
+        child: SafeArea(
+          child: body(controller),
+        ),
+      ),
     );
   }
 }
