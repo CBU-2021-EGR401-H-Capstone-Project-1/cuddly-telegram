@@ -7,13 +7,11 @@ import 'package:path_provider/path_provider.dart';
 class IOHelper {
   static Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
-    print(directory);
     return directory.path;
   }
 
   static Future<File> get _localFile async {
     final path = await _localPath;
-    print(path);
     return File('$path/documents.dat');
   }
 
@@ -25,12 +23,11 @@ class IOHelper {
       try {
         await file.create();
       } catch (e) {
-        print(e);
+        // TODO Catch FileSystemException from file.create
       }
     }
     // encrypt
     final json = journalStore.toJson();
-    print("Write: $json");
     return await file.writeAsString(jsonEncode(json));
   }
 
@@ -42,14 +39,13 @@ class IOHelper {
       if (fileExists) {
         // decrypt
         final contents = await file.readAsString();
-        print("Read: $contents");
         return JournalStore.fromJson(jsonDecode(contents));
       } else {
         await file.create();
         return JournalStore({});
       }
     } catch (e) {
-      print(e);
+      // TODO Catch FileSystemException from file.create
       return JournalStore({});
     }
   }

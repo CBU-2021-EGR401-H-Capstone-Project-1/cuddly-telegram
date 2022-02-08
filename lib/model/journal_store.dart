@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cuddly_telegram/model/journal.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -16,12 +18,21 @@ class JournalStore extends ChangeNotifier {
     return journals.length;
   }
 
+  UnmodifiableSetView<Journal> get sortedJournals {
+    return UnmodifiableSetView(
+      SplayTreeSet<Journal>.from(
+        journals,
+        (journal1, journal2) =>
+            journal1.dateCreated.compareTo(journal2.dateCreated),
+      ),
+    );
+  }
+
   /// Replaces all of the current journals with a new list of journals.
   /// This is primarily used for updating the journal store after an IO read.
   void replaceAll(Set<Journal> journals) {
     this.journals.clear();
     this.journals.addAll(journals);
-    print("Journals Replaced: $journals");
     // notifyListeners();
   }
 
@@ -44,8 +55,10 @@ class JournalStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Creates a JournalStore from a Map of JSON.
   factory JournalStore.fromJson(Map<String, dynamic> json) =>
       _$JournalStoreFromJson(json);
 
+  /// Creates a Map of JSON from a JournalStore.
   Map<String, dynamic> toJson() => _$JournalStoreToJson(this);
 }
