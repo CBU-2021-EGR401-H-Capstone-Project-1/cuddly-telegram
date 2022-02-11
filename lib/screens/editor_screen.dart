@@ -21,7 +21,7 @@ class _EditorScreenState extends State<EditorScreen> {
   void onDropdownSelect(String? newValue, Journal journal) {
     switch (newValue) {
       case 'save':
-        Provider.of<JournalStore>(context, listen: false).add(journal);
+        Provider.of<JournalStore>(context, listen: false).save(journal);
         IOHelper.writeJournalStore(
             Provider.of<JournalStore>(context, listen: false));
         break;
@@ -45,7 +45,7 @@ class _EditorScreenState extends State<EditorScreen> {
                 });
                 final journalStore =
                     Provider.of<JournalStore>(context, listen: false);
-                journalStore.update(journal);
+                journalStore.save(journal);
                 IOHelper.writeJournalStore(journalStore);
               },
             );
@@ -175,7 +175,7 @@ class _EditorScreenState extends State<EditorScreen> {
         onWillPop: () async {
           final journalStore =
               Provider.of<JournalStore>(context, listen: false);
-          journalStore.add(journal);
+          journalStore.save(journal);
           IOHelper.writeJournalStore(journalStore);
           Navigator.pop(context);
           return true;

@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:cuddly_telegram/model/journal.dart';
@@ -59,7 +60,9 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
         itemBuilder: (context, index) {
           return Consumer<JournalStore>(
             builder: (context, journalStore, child) {
-              final sortedJournals = journalStore.sortedJournals;
+              final sortedJournals =
+                  Provider.of<JournalStore>(context, listen: false)
+                      .sortedJournals;
               return JournalItem(
                 journal: sortedJournals.elementAt(index),
               );

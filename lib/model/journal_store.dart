@@ -18,14 +18,11 @@ class JournalStore extends ChangeNotifier {
     return journals.length;
   }
 
+  /// Returns an unmodifiable sorted set of all the journals in the store.
+  /// The journals are sorted by date created.
   UnmodifiableSetView<Journal> get sortedJournals {
-    return UnmodifiableSetView(
-      SplayTreeSet<Journal>.from(
-        journals,
-        (journal1, journal2) =>
-            journal1.dateCreated.compareTo(journal2.dateCreated),
-      ),
-    );
+    return UnmodifiableSetView(SplayTreeSet.from(journals,
+        ((key1, key2) => key1.dateCreated.compareTo(key2.dateCreated))));
   }
 
   /// Replaces all of the current journals with a new list of journals.
@@ -33,25 +30,28 @@ class JournalStore extends ChangeNotifier {
   void replaceAll(Set<Journal> journals) {
     this.journals.clear();
     this.journals.addAll(journals);
-    // notifyListeners();
   }
 
-  /// Adds a journal to the store, writes the store to disk, and notifies all listeners.
-  void add(Journal journal) {
-    journals.add(journal);
-    notifyListeners();
+  /// If a matching journal exists in the store already, it is replaced
+  /// with the newer given journal. If one doesn't exist, then it is added
+  /// to the store.
+  void save(Journal journal) {
+    try {
+      final matchingJournal =
+          journals.firstWhere((element) => element.id == journal.id);
+      if (journals.remove(matchingJournal)) {
+        journals.add(journal);
+      }
+      notifyListeners();
+    } catch (error) {
+      journals.add(journal);
+      notifyListeners();
+    }
   }
 
   /// Removes a journal from the store and notifies listeners.
   void remove(Journal journal) {
     journals.removeWhere((element) => element.id == journal.id);
-    notifyListeners();
-  }
-
-  /// Replaces a journal in the store with one that has a matching ID.
-  void update(Journal journal) {
-    journals.removeWhere((element) => element.id == journal.id);
-    journals.add(journal);
     notifyListeners();
   }
 
