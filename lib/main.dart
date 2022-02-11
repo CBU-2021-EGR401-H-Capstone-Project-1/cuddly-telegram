@@ -15,6 +15,38 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const TextTheme textTheme = TextTheme(
+      displayLarge: TextStyle(fontSize: 57.0, fontFamily: 'Abril Fatface'),
+      displayMedium: TextStyle(fontSize: 45, fontFamily: 'Abril Fatface'),
+      displaySmall: TextStyle(fontSize: 36, fontFamily: 'Abril Fatface'),
+      headlineLarge: TextStyle(fontSize: 32, fontFamily: 'Fira Sans Condensed'),
+      headlineMedium:
+          TextStyle(fontSize: 28, fontFamily: 'Fira Sans Condensed'),
+      headlineSmall: TextStyle(fontSize: 24, fontFamily: 'Fira Sans Condensed'),
+      titleLarge: TextStyle(
+          fontSize: 22, fontWeight: FontWeight.w500, fontFamily: 'Fira Sans'),
+      titleMedium: TextStyle(
+          fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'Fira Sans'),
+      titleSmall: TextStyle(
+          fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'Fira Sans'),
+      labelLarge: TextStyle(
+          fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'Fira Mono'),
+      labelMedium: TextStyle(
+          fontSize: 12, fontWeight: FontWeight.w500, fontFamily: 'Fira Mono'),
+      labelSmall: TextStyle(
+          fontSize: 11, fontWeight: FontWeight.w500, fontFamily: 'Fira Mono'),
+      bodyLarge: TextStyle(fontSize: 16, fontFamily: 'Fira Sans'),
+      bodyMedium: TextStyle(fontSize: 14, fontFamily: 'Fira Sans'),
+      bodySmall: TextStyle(fontSize: 12, fontFamily: 'Fira Sans'),
+    );
+
+    final ThemeData theme = ThemeData(
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+      fontFamily: 'Fira Sans',
+      textTheme: textTheme,
+    );
+
     var routes = {
       FileBrowserScreen.routeName: (ctx) => const FileBrowserScreen(),
       EditorScreen.routeName: (ctx) => const EditorScreen(),
@@ -25,7 +57,7 @@ class MyApp extends StatelessWidget {
       create: (context) => JournalStore({}),
       child: MaterialApp(
         title: 'Journal',
-        theme: ThemeData.from(colorScheme: const ColorScheme.light()),
+        theme: theme,
         routes: routes,
         initialRoute: FileBrowserScreen.routeName,
       ),

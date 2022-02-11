@@ -39,7 +39,7 @@ class JournalItem extends StatelessWidget {
             children: [
               Text(
                 journal.title,
-                style: Theme.of(context).textTheme.labelLarge,
+                style: Theme.of(context).textTheme.titleMedium,
                 textAlign: TextAlign.start,
                 maxLines: 2,
               ),
@@ -54,7 +54,18 @@ class JournalItem extends StatelessWidget {
                 journal.document.toPlainText(),
                 style: Theme.of(context).textTheme.bodySmall,
                 overflow: TextOverflow.ellipsis,
-                maxLines: 6,
+                maxLines: 5,
+              ),
+              const Spacer(),
+              Row(
+                children: const [
+                  Spacer(),
+                  Icon(
+                    Icons.open_in_new_rounded,
+                    size: 16,
+                    color: Colors.grey,
+                  ),
+                ],
               )
             ],
           ),

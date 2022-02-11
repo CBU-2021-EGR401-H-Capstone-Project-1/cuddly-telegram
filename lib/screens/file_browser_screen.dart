@@ -53,21 +53,24 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
       childAspectRatio: 1 / sqrt(2), // A4 paper
     );
     return SafeArea(
-      child: GridView.builder(
-        gridDelegate: gridDelegate,
-        itemCount: itemCount,
-        itemBuilder: (context, index) {
-          return Consumer<JournalStore>(
-            builder: (context, journalStore, child) {
-              final sortedJournals =
-                  Provider.of<JournalStore>(context, listen: false)
-                      .sortedJournals;
-              return JournalItem(
-                journal: sortedJournals.elementAt(index),
-              );
-            },
-          );
-        },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: GridView.builder(
+          gridDelegate: gridDelegate,
+          itemCount: itemCount,
+          itemBuilder: (context, index) {
+            return Consumer<JournalStore>(
+              builder: (context, journalStore, child) {
+                final sortedJournals =
+                    Provider.of<JournalStore>(context, listen: false)
+                        .sortedJournals;
+                return JournalItem(
+                  journal: sortedJournals.elementAt(index),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -107,11 +110,13 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
               ),
               child: Text(
                 'MyJournal',
-                style: theme.textTheme.titleLarge,
+                style:
+                    theme.textTheme.displaySmall!.copyWith(color: Colors.white),
               ),
               curve: Curves.bounceInOut,
             ),
             ListTile(
+              leading: Icon(Icons.book, color: theme.colorScheme.secondary),
               title: const Text('Journals'),
               onTap: () {
                 navigator.pop();
@@ -119,6 +124,10 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
               },
             ),
             ListTile(
+              leading: Icon(
+                Icons.map,
+                color: theme.colorScheme.tertiary,
+              ),
               title: const Text('Map'),
               onTap: () {
                 navigator.pop();
