@@ -1,9 +1,9 @@
-import 'dart:collection';
 import 'dart:math';
 
 import 'package:cuddly_telegram/model/journal.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/editor_screen.dart';
+import 'package:cuddly_telegram/screens/map_screen.dart';
 import 'package:cuddly_telegram/utility/io_helper.dart';
 import 'package:cuddly_telegram/widgets/file_browser_screen/journal_item.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 
 class FileBrowserScreen extends StatefulWidget {
   const FileBrowserScreen({Key? key}) : super(key: key);
-
   static const routeName = "/";
 
   @override
@@ -75,6 +74,8 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final navigator = Navigator.of(context);
     return Scaffold(
       appBar: appBar,
       body: FutureBuilder<JournalStore>(
@@ -88,6 +89,44 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
           }
           return body;
         },
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    theme.colorScheme.primary,
+                    theme.colorScheme.secondary
+                  ],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
+              ),
+              child: Text(
+                'MyJournal',
+                style: theme.textTheme.titleLarge,
+              ),
+              curve: Curves.bounceInOut,
+            ),
+            ListTile(
+              title: const Text('Journals'),
+              onTap: () {
+                navigator.pop();
+                navigator.pushReplacementNamed(FileBrowserScreen.routeName);
+              },
+            ),
+            ListTile(
+              title: const Text('Map'),
+              onTap: () {
+                navigator.pop();
+                navigator.pushReplacementNamed(MapScreen.routeName);
+              },
+            )
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),

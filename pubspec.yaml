@@ -3,7 +3,7 @@ description: Journaling app with a focus on privacy, featuring a hidden bible.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -40,12 +40,13 @@ dependencies:
   permission_handler: ^8.3.0
   uuid: ^3.0.5
   intl: ^0.17.0
+  google_maps_flutter: ^2.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner:
-  json_serializable: 
+  json_serializable:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -59,7 +60,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -81,17 +81,113 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
+  fonts:
+    - family: Fira Mono
+      fonts:
+        - asset: fonts/FiraMono/FiraMono-Bold.ttf
+          weight: 700
+        - asset: fonts/FiraMono/FiraMono-Medium.ttf
+          weight: 500
+        - asset: fonts/FiraMono/FiraMono-Regular.ttf
+          weight: 400
+    - family: Fira Sans
+      fonts:
+        - asset: fonts/FiraSans/FiraSans-Black.ttf
+          weight: 900
+        - asset: fonts/FiraSans/FiraSans-BlackItalic.ttf
+          weight: 900
+          style: italic
+        - asset: fonts/FiraSans/FiraSans-Bold.ttf
+          weight: 700
+        - asset: fonts/FiraSans/FiraSans-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: fonts/FiraSans/FiraSans-ExtraBold.ttf
+          weight: 800
+        - asset: fonts/FiraSans/FiraSans-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: fonts/FiraSans/FiraSans-ExtraLight.ttf
+          weight: 200
+        - asset: fonts/FiraSans/FiraSans-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: fonts/FiraSans/FiraSans-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: fonts/FiraSans/FiraSans-Light.ttf
+          weight: 300
+        - asset: fonts/FiraSans/FiraSans-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: fonts/FiraSans/FiraSans-Medium.ttf
+          weight: 500
+        - asset: fonts/FiraSans/FiraSans-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: fonts/FiraSans/FiraSans-Regular.ttf
+          weight: 400
+        - asset: fonts/FiraSans/FiraSans-SemiBold.ttf
+          weight: 600
+        - asset: fonts/FiraSans/FiraSans-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: fonts/FiraSans/FiraSans-Thin.ttf
+          weight: 100
+        - asset: fonts/FiraSans/FiraSans-ThinItalic.ttf
+          weight: 100
+          style: italic
+    - family: Fira Sans Condensed
+      fonts:
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-Black.ttf
+          weight: 900
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-BlackItalic.ttf
+          weight: 900
+          style: italic
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-Bold.ttf
+          weight: 700
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-ExtraBold.ttf
+          weight: 800
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-ExtraLight.ttf
+          weight: 200
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-Light.ttf
+          weight: 300
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-Medium.ttf
+          weight: 500
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-Regular.ttf
+          weight: 400
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-SemiBold.ttf
+          weight: 600
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-Thin.ttf
+          weight: 100
+        - asset: fonts/FiraSansCondensed/FiraSansCondensed-ThinItalic.ttf
+          weight: 100
+          style: italic
+    - family: Abril Fatface
+      fonts:
+        - asset: fonts/AbrilFatface/AbrilFatface-Regular.ttf
+          weight: 400
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

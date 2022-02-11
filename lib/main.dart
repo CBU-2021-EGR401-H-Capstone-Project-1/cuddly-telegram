@@ -1,3 +1,4 @@
+import 'package:cuddly_telegram/screens/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
     var routes = {
       FileBrowserScreen.routeName: (ctx) => const FileBrowserScreen(),
       EditorScreen.routeName: (ctx) => const EditorScreen(),
+      MapScreen.routeName: (ctx) => const MapScreen(),
     };
 
     return ChangeNotifierProvider(

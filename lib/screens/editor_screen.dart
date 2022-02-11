@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 
 class EditorScreen extends StatefulWidget {
   const EditorScreen({Key? key}) : super(key: key);
-
   static const routeName = '/editor';
 
   @override
