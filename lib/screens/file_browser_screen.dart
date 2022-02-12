@@ -120,7 +120,6 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
               title: const Text('Journals'),
               onTap: () {
                 navigator.pop();
-                navigator.pushReplacementNamed(FileBrowserScreen.routeName);
               },
             ),
             ListTile(
@@ -131,7 +130,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
               title: const Text('Map'),
               onTap: () {
                 navigator.pop();
-                navigator.pushReplacementNamed(MapScreen.routeName);
+                navigator.pushNamed(MapScreen.routeName);
               },
             )
           ],
