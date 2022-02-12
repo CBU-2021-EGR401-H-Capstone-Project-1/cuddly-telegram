@@ -42,6 +42,9 @@ class JournalStore extends ChangeNotifier {
       if (journals.remove(matchingJournal)) {
         journals.add(journal);
       }
+      journals.forEach(
+        (element) => print(element.toString()),
+      );
       notifyListeners();
     } catch (error) {
       journals.add(journal);

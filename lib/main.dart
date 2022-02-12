@@ -30,11 +30,17 @@ class MyApp extends StatelessWidget {
       titleSmall: TextStyle(
           fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'Fira Sans'),
       labelLarge: TextStyle(
-          fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'Fira Mono'),
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Fira Sans Condensed'),
       labelMedium: TextStyle(
-          fontSize: 12, fontWeight: FontWeight.w500, fontFamily: 'Fira Mono'),
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Fira Sans Condensed'),
       labelSmall: TextStyle(
-          fontSize: 11, fontWeight: FontWeight.w500, fontFamily: 'Fira Mono'),
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Fira Sans Condensed'),
       bodyLarge: TextStyle(fontSize: 16, fontFamily: 'Fira Sans'),
       bodyMedium: TextStyle(fontSize: 14, fontFamily: 'Fira Sans'),
       bodySmall: TextStyle(fontSize: 12, fontFamily: 'Fira Sans'),

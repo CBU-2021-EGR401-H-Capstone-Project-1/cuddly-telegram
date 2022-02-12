@@ -30,6 +30,11 @@ class Journal {
       _$JournalFromJson(json);
 
   Map<String, dynamic> toJson() => _$JournalToJson(this);
+
+  @override
+  String toString() {
+    return 'Journal id=$id title=$title document=$document dateCreated=$dateCreated latitude=$latitude longitude=$longitude';
+  }
 }
 
 class _QuillDocumentConverter

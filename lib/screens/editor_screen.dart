@@ -1,10 +1,13 @@
 import 'package:cuddly_telegram/model/journal.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
+import 'package:cuddly_telegram/screens/map_screen.dart';
 import 'package:cuddly_telegram/utility/io_helper.dart';
 import 'package:cuddly_telegram/widgets/editor_screen/edit_title_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 
 class EditorScreen extends StatefulWidget {
   const EditorScreen({Key? key}) : super(key: key);
@@ -17,7 +20,8 @@ class EditorScreen extends StatefulWidget {
 class _EditorScreenState extends State<EditorScreen> {
   final FocusNode _focusNode = FocusNode();
 
-  void onDropdownSelect(String? newValue, Journal journal) {
+  void onDropdownSelect(
+      String? newValue, Journal journal, BuildContext context) {
     switch (newValue) {
       case 'save':
         Provider.of<JournalStore>(context, listen: false).save(journal);
@@ -50,6 +54,25 @@ class _EditorScreenState extends State<EditorScreen> {
             );
           },
         );
+        break;
+      case 'setLocation':
+        LatLng? currentLocation;
+        if (journal.latitude != null && journal.longitude != null) {
+          currentLocation = LatLng(journal.latitude!, journal.longitude!);
+        }
+        Navigator.of(context)
+            .pushNamed(MapScreen.routeName,
+                arguments: Tuple2<bool, LatLng?>(true, currentLocation))
+            .then((latLng) {
+          if (latLng is LatLng) {
+            print("New LatLng selected");
+            journal.latitude = latLng.latitude;
+            journal.longitude = latLng.longitude;
+          }
+          Provider.of<JournalStore>(context, listen: false).save(journal);
+          IOHelper.writeJournalStore(
+              Provider.of<JournalStore>(context, listen: false));
+        });
         break;
       default:
         break;
@@ -90,7 +113,27 @@ class _EditorScreenState extends State<EditorScreen> {
       DropdownMenuItem(
         child: Row(
           children: [
-            Icon(Icons.delete, color: Theme.of(context).primaryColor),
+            Icon(Icons.edit, color: Theme.of(context).primaryColor),
+            const SizedBox(width: 8),
+            Text('Edit Title', style: Theme.of(context).textTheme.button),
+          ],
+        ),
+        value: 'editTitle',
+      ),
+      DropdownMenuItem(
+        child: Row(
+          children: [
+            Icon(Icons.map, color: Theme.of(context).primaryColor),
+            const SizedBox(width: 8),
+            Text('Set Location', style: Theme.of(context).textTheme.button),
+          ],
+        ),
+        value: 'setLocation',
+      ),
+      DropdownMenuItem(
+        child: Row(
+          children: [
+            const Icon(Icons.delete, color: Colors.red),
             const SizedBox(
               width: 8,
             ),
@@ -99,28 +142,20 @@ class _EditorScreenState extends State<EditorScreen> {
         ),
         value: 'delete',
       ),
-      DropdownMenuItem(
-        child: Row(
-          children: [
-            Icon(Icons.edit, color: Theme.of(context).primaryColor),
-            const SizedBox(width: 8),
-            Text('Edit Title', style: Theme.of(context).textTheme.button),
-          ],
-        ),
-        value: 'editTitle',
-      )
     ];
   }
 
-  PreferredSizeWidget appBar(Journal journal) {
+  PreferredSizeWidget appBar(Journal journal, BuildContext context) {
     return AppBar(
       title: Text(journal.title),
       actions: [
         DropdownButtonHideUnderline(
           child: DropdownButton<String>(
+            borderRadius: BorderRadius.circular(12.0),
             icon: Icon(Icons.more_vert_rounded,
                 color: Theme.of(context).primaryIconTheme.color),
-            onChanged: (newValue) => onDropdownSelect(newValue, journal),
+            onChanged: (newValue) =>
+                onDropdownSelect(newValue, journal, context),
             items: dropdownItems,
           ),
         )
@@ -129,47 +164,62 @@ class _EditorScreenState extends State<EditorScreen> {
   }
 
   Widget body(quill.QuillController controller) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          SingleChildScrollView(
+    return Column(
+      children: [
+        Expanded(
+          child: quill.QuillEditor(
+            controller: controller,
+            padding: const EdgeInsets.all(8.0),
+            readOnly: false,
+            scrollController: ScrollController(),
+            scrollable: true,
+            expands: false,
+            focusNode: _focusNode,
+            autoFocus: true,
+          ),
+        ),
+        const SizedBox(
+          height: 12.0,
+        ),
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade200,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(8.0),
+              topRight: Radius.circular(8.0),
+            ),
+            boxShadow: const [
+              BoxShadow(
+                offset: Offset(0, -2),
+                blurRadius: 8.0,
+                color: Colors.black38,
+              ),
+            ],
+          ),
+          child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             clipBehavior: Clip.none,
             child: quill.QuillToolbar.basic(
               controller: controller,
             ),
           ),
-          const SizedBox(
-            height: 8,
-          ),
-          Expanded(
-            child: quill.QuillEditor(
-              controller: controller,
-              padding: const EdgeInsets.all(0),
-              readOnly: false,
-              scrollController: ScrollController(),
-              scrollable: true,
-              expands: false,
-              focusNode: _focusNode,
-              autoFocus: true,
-            ),
-          )
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
     var journal = ModalRoute.of(context)?.settings.arguments as Journal;
+    // TODO Fix journal not saving latitude/longitude
     final controller = quill.QuillController(
       document: journal.document,
       selection: const TextSelection.collapsed(offset: 0),
       keepStyleOnNewLine: false,
     );
     return Scaffold(
-      appBar: appBar(journal),
+      appBar: appBar(journal, context),
       body: WillPopScope(
         onWillPop: () async {
           final journalStore =

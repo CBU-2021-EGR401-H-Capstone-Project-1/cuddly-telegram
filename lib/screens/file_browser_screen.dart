@@ -94,15 +94,24 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
         },
       ),
       drawer: Drawer(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomRight: Radius.circular(128.0),
+          ),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
               decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(32.0),
+                ),
                 gradient: LinearGradient(
                   colors: [
                     theme.colorScheme.primary,
-                    theme.colorScheme.secondary
+                    theme.colorScheme.inversePrimary,
                   ],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
@@ -115,23 +124,39 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
               ),
               curve: Curves.bounceInOut,
             ),
-            ListTile(
-              leading: Icon(Icons.book, color: theme.colorScheme.secondary),
-              title: const Text('Journals'),
-              onTap: () {
-                navigator.pop();
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.map,
-                color: theme.colorScheme.tertiary,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: ListTile(
+                leading: Icon(Icons.book, color: theme.colorScheme.primary),
+                title: const Text('Journals'),
+                onTap: () {
+                  navigator.pop();
+                },
+                selectedTileColor: Theme.of(context).colorScheme.inversePrimary,
+                selected: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(128.0),
+                ),
               ),
-              title: const Text('Map'),
-              onTap: () {
-                navigator.pop();
-                navigator.pushNamed(MapScreen.routeName);
-              },
+            ),
+            const SizedBox(height: 8.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: ListTile(
+                leading: Icon(
+                  Icons.map,
+                  color: theme.colorScheme.tertiary,
+                ),
+                title: const Text('Map'),
+                onTap: () {
+                  navigator.pop();
+                  navigator.pushNamed(MapScreen.routeName);
+                },
+                tileColor: Theme.of(context).colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(128.0),
+                ),
+              ),
             )
           ],
         ),
