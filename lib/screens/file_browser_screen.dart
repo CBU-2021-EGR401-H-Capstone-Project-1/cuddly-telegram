@@ -10,41 +10,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:provider/provider.dart';
 
-class FileBrowserScreen extends StatefulWidget {
+class FileBrowserScreen extends StatelessWidget {
   const FileBrowserScreen({Key? key}) : super(key: key);
   static const routeName = "/";
 
   @override
-  _FileBrowserScreenState createState() => _FileBrowserScreenState();
-}
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final navigator = Navigator.of(context);
 
-class _FileBrowserScreenState extends State<FileBrowserScreen> {
-  /// Generates the app bar for the screen. A single add button creates a
-  /// new journal entry and pushes to the editor screen.
-  PreferredSizeWidget get appBar {
-    return AppBar(
+    /// Generates the app bar for the screen. A single add button creates a
+    /// new journal entry and pushes to the editor screen.
+    PreferredSizeWidget appBar = AppBar(
       title: const Text('Journals'),
       actions: [
         IconButton(
           icon: const Icon(Icons.add),
           color: Colors.white,
-          onPressed: () {
-            Navigator.of(context).pushNamed(
-              EditorScreen.routeName,
-              arguments: Journal(
-                title: 'Journal',
-                document: quill.Document(),
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => EditorScreen(
+                journal: Journal(
+                  title: 'New Journal',
+                  document: quill.Document(),
+                ),
               ),
-            );
-          },
+            ),
+          ),
         )
       ],
     );
-  }
 
-  /// Generates the body of the screen. A grid populated with a number of `JournalItem`
-  /// widgets equal to the number of journals in the `JournalStore` is created.
-  Widget get body {
     final itemCount = Provider.of<JournalStore>(context, listen: true).count;
     final gridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
       maxCrossAxisExtent: 150,
@@ -52,7 +48,10 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
       mainAxisSpacing: 2,
       childAspectRatio: 1 / sqrt(2), // A4 paper
     );
-    return SafeArea(
+
+    /// Generates the body of the screen. A grid populated with a number of `JournalItem`
+    /// widgets equal to the number of journals in the `JournalStore` is created.
+    Widget body = SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: GridView.builder(
@@ -62,10 +61,10 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
             return Consumer<JournalStore>(
               builder: (context, journalStore, child) {
                 final sortedJournals =
-                    Provider.of<JournalStore>(context, listen: false)
+                    Provider.of<JournalStore>(context, listen: true)
                         .sortedJournals;
                 return JournalItem(
-                  journal: sortedJournals.elementAt(index),
+                  journalId: sortedJournals.elementAt(index).id,
                 );
               },
             );
@@ -73,12 +72,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
         ),
       ),
     );
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final navigator = Navigator.of(context);
     return Scaffold(
       appBar: appBar,
       body: FutureBuilder<JournalStore>(
@@ -163,15 +157,16 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context).pushNamed(
-            EditorScreen.routeName,
-            arguments: Journal(
-              title: 'Journal',
-              document: quill.Document(),
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => EditorScreen(
+              journal: Journal(
+                title: 'New Journal',
+                document: quill.Document(),
+              ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

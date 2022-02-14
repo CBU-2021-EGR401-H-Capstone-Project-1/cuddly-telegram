@@ -18,6 +18,10 @@ class JournalStore extends ChangeNotifier {
     return journals.length;
   }
 
+  Journal journalWithId(String id) {
+    return journals.firstWhere((element) => element.id == id);
+  }
+
   /// Returns an unmodifiable sorted set of all the journals in the store.
   /// The journals are sorted by date created.
   UnmodifiableSetView<Journal> get sortedJournals {
@@ -42,9 +46,9 @@ class JournalStore extends ChangeNotifier {
       if (journals.remove(matchingJournal)) {
         journals.add(journal);
       }
-      journals.forEach(
-        (element) => print(element.toString()),
-      );
+      for (journal in journals) {
+        print(journal);
+      }
       notifyListeners();
     } catch (error) {
       journals.add(journal);

@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
 
 part 'journal.g.dart';
 

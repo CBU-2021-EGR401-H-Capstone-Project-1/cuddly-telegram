@@ -1,22 +1,31 @@
 import 'dart:io';
 
 import 'package:cuddly_telegram/model/journal.dart';
+import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/editor_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 /// A widget that creates a Card representing a Journal entry based on a given
 /// index, which points to an object in the `JournalStore`.
 ///
 /// When tapped, the widget will push the editor screen onto the view stack,
 /// and pass in this item's `Journal` object to be edited.
-class JournalItem extends StatelessWidget {
-  const JournalItem({Key? key, required this.journal}) : super(key: key);
-
-  final Journal journal;
+class JournalItem extends StatefulWidget {
+  const JournalItem({Key? key, required this.journalId}) : super(key: key);
+  final String journalId;
 
   @override
+  State<JournalItem> createState() => _JournalItemState();
+}
+
+class _JournalItemState extends State<JournalItem> {
+  @override
   Widget build(BuildContext context) {
+    final Journal journal = Provider.of<JournalStore>(context, listen: true)
+        .journalWithId(widget.journalId);
+    print(journal);
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -25,12 +34,11 @@ class JournalItem extends StatelessWidget {
       child: InkWell(
         splashColor: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(8),
-        onTap: () {
-          Navigator.of(context).pushNamed(
-            EditorScreen.routeName,
-            arguments: journal,
-          );
-        },
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => EditorScreen(journal: journal),
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -48,6 +56,12 @@ class JournalItem extends StatelessWidget {
                 DateFormat.yMMMd(Platform.localeName)
                     .format(journal.dateCreated),
                 style: Theme.of(context).textTheme.labelSmall,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                "${journal.latitude} ${journal.longitude}",
+                style: Theme.of(context).textTheme.labelSmall,
+                maxLines: 2,
               ),
               const SizedBox(height: 10),
               Text(

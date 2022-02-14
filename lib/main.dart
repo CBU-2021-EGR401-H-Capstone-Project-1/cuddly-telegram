@@ -55,7 +55,6 @@ class MyApp extends StatelessWidget {
 
     var routes = {
       FileBrowserScreen.routeName: (ctx) => const FileBrowserScreen(),
-      EditorScreen.routeName: (ctx) => const EditorScreen(),
       MapScreen.routeName: (ctx) => const MapScreen(),
     };
 
