@@ -1,117 +1,238 @@
+import 'package:cuddly_telegram/model/journal.dart';
+import 'package:cuddly_telegram/model/journal_store.dart';
+import 'package:cuddly_telegram/screens/map_screen.dart';
+import 'package:cuddly_telegram/utility/io_helper.dart';
+import 'package:cuddly_telegram/widgets/editor_screen/edit_title_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 
-class EditorScreen extends StatelessWidget {
-  EditorScreen({Key? key}) : super(key: key);
-
+class EditorScreen extends StatefulWidget {
+  const EditorScreen({Key? key}) : super(key: key);
   static const routeName = '/editor';
 
-  final quill.QuillController _controller = quill.QuillController(
-    document: quill.Document(),
-    selection: const TextSelection.collapsed(offset: 0),
-    keepStyleOnNewLine: false,
-  );
-  final FocusNode _focusNode = FocusNode();
-  final String journalName = "";
+  @override
+  State<EditorScreen> createState() => _EditorScreenState();
+}
 
-  Widget get body {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          SingleChildScrollView(
+class _EditorScreenState extends State<EditorScreen> {
+  final FocusNode _focusNode = FocusNode();
+
+  void onDropdownSelect(
+      String? newValue, Journal journal, BuildContext context) {
+    switch (newValue) {
+      case 'save':
+        Provider.of<JournalStore>(context, listen: false).save(journal);
+        IOHelper.writeJournalStore(
+            Provider.of<JournalStore>(context, listen: false));
+        break;
+      case 'delete':
+        Provider.of<JournalStore>(context, listen: false).remove(journal);
+        IOHelper.writeJournalStore(
+            Provider.of<JournalStore>(context, listen: false));
+        Navigator.of(context).pop();
+        break;
+      case 'editTitle':
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          useSafeArea: true,
+          builder: (context) {
+            return EditTitleAlertDialog(
+              journal: journal,
+              onSavePressed: (newTitle) {
+                setState(() {
+                  journal.title = newTitle;
+                });
+                final journalStore =
+                    Provider.of<JournalStore>(context, listen: false);
+                journalStore.save(journal);
+                IOHelper.writeJournalStore(journalStore);
+              },
+            );
+          },
+        );
+        break;
+      case 'setLocation':
+        LatLng? currentLocation;
+        if (journal.latitude != null && journal.longitude != null) {
+          currentLocation = LatLng(journal.latitude!, journal.longitude!);
+        }
+        Navigator.of(context)
+            .pushNamed(MapScreen.routeName,
+                arguments: Tuple2<bool, LatLng?>(true, currentLocation))
+            .then((latLng) {
+          if (latLng is LatLng) {
+            print("New LatLng selected");
+            journal.latitude = latLng.latitude;
+            journal.longitude = latLng.longitude;
+          }
+          Provider.of<JournalStore>(context, listen: false).save(journal);
+          IOHelper.writeJournalStore(
+              Provider.of<JournalStore>(context, listen: false));
+        });
+        break;
+      default:
+        break;
+      // TODO handle 'calendar' case
+    }
+  }
+
+  List<DropdownMenuItem<String>> get dropdownItems {
+    return [
+      DropdownMenuItem(
+        child: Row(
+          children: [
+            Icon(
+              Icons.save,
+              color: Theme.of(context).primaryColor,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              "Save",
+              style: Theme.of(context).textTheme.button,
+            )
+          ],
+        ),
+        value: 'save',
+      ),
+      DropdownMenuItem(
+        child: Row(
+          children: [
+            Icon(Icons.calendar_today, color: Theme.of(context).primaryColor),
+            const SizedBox(
+              width: 8,
+            ),
+            Text('Add to Calendar', style: Theme.of(context).textTheme.button),
+          ],
+        ),
+        value: 'calendar',
+      ),
+      DropdownMenuItem(
+        child: Row(
+          children: [
+            Icon(Icons.edit, color: Theme.of(context).primaryColor),
+            const SizedBox(width: 8),
+            Text('Edit Title', style: Theme.of(context).textTheme.button),
+          ],
+        ),
+        value: 'editTitle',
+      ),
+      DropdownMenuItem(
+        child: Row(
+          children: [
+            Icon(Icons.map, color: Theme.of(context).primaryColor),
+            const SizedBox(width: 8),
+            Text('Set Location', style: Theme.of(context).textTheme.button),
+          ],
+        ),
+        value: 'setLocation',
+      ),
+      DropdownMenuItem(
+        child: Row(
+          children: [
+            const Icon(Icons.delete, color: Colors.red),
+            const SizedBox(
+              width: 8,
+            ),
+            Text('Delete', style: Theme.of(context).textTheme.button),
+          ],
+        ),
+        value: 'delete',
+      ),
+    ];
+  }
+
+  PreferredSizeWidget appBar(Journal journal, BuildContext context) {
+    return AppBar(
+      title: Text(journal.title),
+      actions: [
+        DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            borderRadius: BorderRadius.circular(12.0),
+            icon: Icon(Icons.more_vert_rounded,
+                color: Theme.of(context).primaryIconTheme.color),
+            onChanged: (newValue) =>
+                onDropdownSelect(newValue, journal, context),
+            items: dropdownItems,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget body(quill.QuillController controller) {
+    return Column(
+      children: [
+        Expanded(
+          child: quill.QuillEditor(
+            controller: controller,
+            padding: const EdgeInsets.all(8.0),
+            readOnly: false,
+            scrollController: ScrollController(),
+            scrollable: true,
+            expands: false,
+            focusNode: _focusNode,
+            autoFocus: true,
+          ),
+        ),
+        const SizedBox(
+          height: 12.0,
+        ),
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade200,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(8.0),
+              topRight: Radius.circular(8.0),
+            ),
+            boxShadow: const [
+              BoxShadow(
+                offset: Offset(0, -2),
+                blurRadius: 8.0,
+                color: Colors.black38,
+              ),
+            ],
+          ),
+          child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             clipBehavior: Clip.none,
             child: quill.QuillToolbar.basic(
-              controller: _controller,
+              controller: controller,
             ),
           ),
-          const SizedBox(
-            height: 8,
-          ),
-          Expanded(
-            child: quill.QuillEditor(
-              controller: _controller,
-              padding: const EdgeInsets.all(0),
-              readOnly: false,
-              scrollController: ScrollController(),
-              scrollable: true,
-              expands: false,
-              focusNode: _focusNode,
-              autoFocus: true,
-            ),
-          )
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    var journal = ModalRoute.of(context)?.settings.arguments as Journal;
+    // TODO Fix journal not saving latitude/longitude
+    final controller = quill.QuillController(
+      document: journal.document,
+      selection: const TextSelection.collapsed(offset: 0),
+      keepStyleOnNewLine: false,
+    );
     return Scaffold(
-      appBar: AppBar(
-        title: Text(journalName),
-        actions: [
-          DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              icon: Icon(Icons.more_vert_rounded,
-                  color: Theme.of(context).primaryIconTheme.color),
-              onChanged: (newValue) {
-                if (newValue == 'calendar') {
-                  print('Calendar pressed');
-                }
-                if (newValue == 'delete') {
-                  print('Delete pressed');
-                }
-                if (newValue == 'debug') {
-                  print(_controller.document.toDelta().toJson().toString());
-                }
-              },
-              items: [
-                DropdownMenuItem(
-                  child: Row(
-                    children: [
-                      Icon(Icons.calendar_today,
-                          color: Theme.of(context).primaryColor),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Text('Add to Calendar',
-                          style: Theme.of(context).textTheme.button),
-                    ],
-                  ),
-                  value: 'calendar',
-                ),
-                DropdownMenuItem(
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete, color: Theme.of(context).primaryColor),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Text('Delete', style: Theme.of(context).textTheme.button),
-                    ],
-                  ),
-                  value: 'delete',
-                ),
-                DropdownMenuItem(
-                  child: Row(
-                    children: [
-                      Icon(Icons.bug_report,
-                          color: Theme.of(context).primaryColor),
-                      const SizedBox(width: 8),
-                      Text('Print JSON',
-                          style: Theme.of(context).textTheme.button),
-                    ],
-                  ),
-                  value: 'debug',
-                )
-              ],
-            ),
-          )
-        ],
+      appBar: appBar(journal, context),
+      body: WillPopScope(
+        onWillPop: () async {
+          final journalStore =
+              Provider.of<JournalStore>(context, listen: false);
+          journalStore.save(journal);
+          IOHelper.writeJournalStore(journalStore);
+          Navigator.pop(context);
+          return true;
+        },
+        child: SafeArea(
+          child: body(controller),
+        ),
       ),
-      body: SafeArea(child: body),
     );
   }
 }
