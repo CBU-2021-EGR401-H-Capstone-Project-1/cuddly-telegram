@@ -1,0 +1,4 @@
+lang: en_US
+direction: 0
+foregroundColor: #ff000000
+backgroundColor: #ffbb29ff
