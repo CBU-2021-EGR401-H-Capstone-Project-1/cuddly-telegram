@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/file_browser_screen.dart';
-import 'package:cuddly_telegram/screens/editor_screen.dart';
 
 void main() {
   runApp(const MyApp());

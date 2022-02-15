@@ -12,11 +12,15 @@ Journal _$JournalFromJson(Map<String, dynamic> json) => Journal(
           const _QuillDocumentConverter().fromJson(json['document'] as List),
     )
       ..id = json['id'] as String
-      ..dateCreated = DateTime.parse(json['dateCreated'] as String);
+      ..dateCreated = DateTime.parse(json['dateCreated'] as String)
+      ..latitude = (json['latitude'] as num?)?.toDouble()
+      ..longitude = (json['longitude'] as num?)?.toDouble();
 
 Map<String, dynamic> _$JournalToJson(Journal instance) => <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
       'document': const _QuillDocumentConverter().toJson(instance.document),
       'dateCreated': instance.dateCreated.toIso8601String(),
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
     };

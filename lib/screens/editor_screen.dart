@@ -75,10 +75,10 @@ class _EditorScreenState extends State<EditorScreen> {
             print(widget.journal.latitude);
             print(widget.journal.longitude);
           }
-          Provider.of<JournalStore>(context, listen: false)
-              .save(widget.journal);
-          IOHelper.writeJournalStore(
-              Provider.of<JournalStore>(context, listen: false));
+          final journalStore =
+              Provider.of<JournalStore>(context, listen: false);
+          journalStore.save(widget.journal);
+          IOHelper.writeJournalStore(journalStore);
         });
         break;
       default:
@@ -229,7 +229,7 @@ class _EditorScreenState extends State<EditorScreen> {
           final journalStore =
               Provider.of<JournalStore>(context, listen: false);
           journalStore.save(widget.journal);
-          IOHelper.writeJournalStore(journalStore);
+          await IOHelper.writeJournalStore(journalStore);
           Navigator.pop(context);
           return true;
         },
