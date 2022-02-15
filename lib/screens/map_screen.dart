@@ -62,13 +62,13 @@ class _MapScreenState extends State<MapScreen> {
                   title: j.title,
                   snippet: DateFormat.yMMMd(Platform.localeName)
                       .format(j.dateCreated),
-                ),
-                position: LatLng(j.latitude!, j.longitude!),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => EditorScreen(journal: j),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => EditorScreen(journal: j),
+                    ),
                   ),
                 ),
+                position: LatLng(j.latitude!, j.longitude!),
               ),
             )
             .toSet();

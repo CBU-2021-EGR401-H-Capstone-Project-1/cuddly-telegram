@@ -49,12 +49,6 @@ class JournalItem extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                "${journal.latitude} ${journal.longitude}",
-                style: Theme.of(context).textTheme.labelSmall,
-                maxLines: 2,
-              ),
-              const SizedBox(height: 10),
-              Text(
                 journal.document.toPlainText(),
                 style: Theme.of(context).textTheme.bodySmall,
                 overflow: TextOverflow.ellipsis,
@@ -62,9 +56,15 @@ class JournalItem extends StatelessWidget {
               ),
               const Spacer(),
               Row(
-                children: const [
-                  Spacer(),
-                  Icon(
+                children: [
+                  if (journal.latitude != null && journal.longitude != null)
+                    const Icon(
+                      Icons.location_pin,
+                      size: 16,
+                      color: Colors.red,
+                    ),
+                  const Spacer(),
+                  const Icon(
                     Icons.open_in_new_rounded,
                     size: 16,
                     color: Colors.grey,
