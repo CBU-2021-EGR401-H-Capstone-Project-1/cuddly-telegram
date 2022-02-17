@@ -18,6 +18,20 @@ class JournalStore extends ChangeNotifier {
     return journals.length;
   }
 
+  /// Whether or not the store is empty.
+  bool get isEmpty {
+    return journals.isEmpty;
+  }
+
+  /// Whether or not the store is not empty.
+  bool get isNotEmpty {
+    return journals.isNotEmpty;
+  }
+
+  Journal journalWithId(String id) {
+    return journals.firstWhere((element) => element.id == id);
+  }
+
   /// Returns an unmodifiable sorted set of all the journals in the store.
   /// The journals are sorted by date created.
   UnmodifiableSetView<Journal> get sortedJournals {
@@ -42,14 +56,15 @@ class JournalStore extends ChangeNotifier {
       if (journals.remove(matchingJournal)) {
         journals.add(journal);
       }
-      journals.forEach(
-        (element) => print(element.toString()),
-      );
+      for (journal in journals) {
+        print(journal);
+      }
       notifyListeners();
     } catch (error) {
       journals.add(journal);
       notifyListeners();
     }
+    notifyListeners();
   }
 
   /// Removes a journal from the store and notifies listeners.
@@ -64,4 +79,9 @@ class JournalStore extends ChangeNotifier {
 
   /// Creates a Map of JSON from a JournalStore.
   Map<String, dynamic> toJson() => _$JournalStoreToJson(this);
+
+  @override
+  String toString() {
+    return 'JournalStore\nJournals: $journals';
+  }
 }

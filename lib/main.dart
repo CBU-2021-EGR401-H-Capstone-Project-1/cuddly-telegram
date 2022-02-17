@@ -5,9 +5,12 @@ import 'package:provider/provider.dart';
 import 'package:cuddly_telegram/model/local_style.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/file_browser_screen.dart';
+<<<<<<< HEAD
 import 'package:cuddly_telegram/screens/editor_screen.dart';
 import 'package:cuddly_telegram/screens/file_browser_screen.dart';
 import 'package:cuddly_telegram/widgets/localized_style.dart';
+=======
+>>>>>>> ecee9aacc2a3087f23cc28899bddd5df5b1a00b6
 
 void main() {
   runApp(const MyApp());
@@ -58,7 +61,6 @@ class MyApp extends StatelessWidget {
 
     var routes = {
       FileBrowserScreen.routeName: (ctx) => const FileBrowserScreen(),
-      EditorScreen.routeName: (ctx) => const EditorScreen(),
       MapScreen.routeName: (ctx) => const MapScreen(),
     };
 

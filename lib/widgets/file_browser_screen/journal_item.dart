@@ -12,7 +12,6 @@ import 'package:intl/intl.dart';
 /// and pass in this item's `Journal` object to be edited.
 class JournalItem extends StatelessWidget {
   const JournalItem({Key? key, required this.journal}) : super(key: key);
-
   final Journal journal;
 
   @override
@@ -25,12 +24,11 @@ class JournalItem extends StatelessWidget {
       child: InkWell(
         splashColor: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(8),
-        onTap: () {
-          Navigator.of(context).pushNamed(
-            EditorScreen.routeName,
-            arguments: journal,
-          );
-        },
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => EditorScreen(journal: journal),
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -58,9 +56,15 @@ class JournalItem extends StatelessWidget {
               ),
               const Spacer(),
               Row(
-                children: const [
-                  Spacer(),
-                  Icon(
+                children: [
+                  if (journal.latitude != null && journal.longitude != null)
+                    const Icon(
+                      Icons.location_pin,
+                      size: 16,
+                      color: Colors.red,
+                    ),
+                  const Spacer(),
+                  const Icon(
                     Icons.open_in_new_rounded,
                     size: 16,
                     color: Colors.grey,

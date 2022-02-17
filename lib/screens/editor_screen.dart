@@ -10,8 +10,8 @@ import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
 class EditorScreen extends StatefulWidget {
-  const EditorScreen({Key? key}) : super(key: key);
-  static const routeName = '/editor';
+  const EditorScreen({Key? key, required this.journal}) : super(key: key);
+  final Journal journal;
 
   @override
   State<EditorScreen> createState() => _EditorScreenState();
@@ -20,16 +20,17 @@ class EditorScreen extends StatefulWidget {
 class _EditorScreenState extends State<EditorScreen> {
   final FocusNode _focusNode = FocusNode();
 
-  void onDropdownSelect(
-      String? newValue, Journal journal, BuildContext context) {
+  void onDropdownSelect(String? newValue, BuildContext context) {
     switch (newValue) {
       case 'save':
-        Provider.of<JournalStore>(context, listen: false).save(journal);
+        print(widget.journal);
+        Provider.of<JournalStore>(context, listen: false).save(widget.journal);
         IOHelper.writeJournalStore(
             Provider.of<JournalStore>(context, listen: false));
         break;
       case 'delete':
-        Provider.of<JournalStore>(context, listen: false).remove(journal);
+        Provider.of<JournalStore>(context, listen: false)
+            .remove(widget.journal);
         IOHelper.writeJournalStore(
             Provider.of<JournalStore>(context, listen: false));
         Navigator.of(context).pop();
@@ -41,14 +42,14 @@ class _EditorScreenState extends State<EditorScreen> {
           useSafeArea: true,
           builder: (context) {
             return EditTitleAlertDialog(
-              journal: journal,
+              journal: widget.journal,
               onSavePressed: (newTitle) {
                 setState(() {
-                  journal.title = newTitle;
+                  widget.journal.title = newTitle;
                 });
                 final journalStore =
                     Provider.of<JournalStore>(context, listen: false);
-                journalStore.save(journal);
+                journalStore.save(widget.journal);
                 IOHelper.writeJournalStore(journalStore);
               },
             );
@@ -57,21 +58,27 @@ class _EditorScreenState extends State<EditorScreen> {
         break;
       case 'setLocation':
         LatLng? currentLocation;
-        if (journal.latitude != null && journal.longitude != null) {
-          currentLocation = LatLng(journal.latitude!, journal.longitude!);
+        print("Pre Set-Location: ${widget.journal}");
+        if (widget.journal.latitude != null &&
+            widget.journal.longitude != null) {
+          currentLocation =
+              LatLng(widget.journal.latitude!, widget.journal.longitude!);
         }
         Navigator.of(context)
             .pushNamed(MapScreen.routeName,
                 arguments: Tuple2<bool, LatLng?>(true, currentLocation))
             .then((latLng) {
           if (latLng is LatLng) {
-            print("New LatLng selected");
-            journal.latitude = latLng.latitude;
-            journal.longitude = latLng.longitude;
+            widget.journal.latitude = latLng.latitude;
+            widget.journal.longitude = latLng.longitude;
+            print(latLng);
+            print(widget.journal.latitude);
+            print(widget.journal.longitude);
           }
-          Provider.of<JournalStore>(context, listen: false).save(journal);
-          IOHelper.writeJournalStore(
-              Provider.of<JournalStore>(context, listen: false));
+          final journalStore =
+              Provider.of<JournalStore>(context, listen: false);
+          journalStore.save(widget.journal);
+          IOHelper.writeJournalStore(journalStore);
         });
         break;
       default:
@@ -145,17 +152,16 @@ class _EditorScreenState extends State<EditorScreen> {
     ];
   }
 
-  PreferredSizeWidget appBar(Journal journal, BuildContext context) {
+  PreferredSizeWidget appBar(BuildContext context) {
     return AppBar(
-      title: Text(journal.title),
+      title: Text(widget.journal.title),
       actions: [
         DropdownButtonHideUnderline(
           child: DropdownButton<String>(
             borderRadius: BorderRadius.circular(12.0),
             icon: Icon(Icons.more_vert_rounded,
                 color: Theme.of(context).primaryIconTheme.color),
-            onChanged: (newValue) =>
-                onDropdownSelect(newValue, journal, context),
+            onChanged: (newValue) => onDropdownSelect(newValue, context),
             items: dropdownItems,
           ),
         )
@@ -211,21 +217,19 @@ class _EditorScreenState extends State<EditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var journal = ModalRoute.of(context)?.settings.arguments as Journal;
-    // TODO Fix journal not saving latitude/longitude
     final controller = quill.QuillController(
-      document: journal.document,
+      document: widget.journal.document,
       selection: const TextSelection.collapsed(offset: 0),
       keepStyleOnNewLine: false,
     );
     return Scaffold(
-      appBar: appBar(journal, context),
+      appBar: appBar(context),
       body: WillPopScope(
         onWillPop: () async {
           final journalStore =
               Provider.of<JournalStore>(context, listen: false);
-          journalStore.save(journal);
-          IOHelper.writeJournalStore(journalStore);
+          journalStore.save(widget.journal);
+          await IOHelper.writeJournalStore(journalStore);
           Navigator.pop(context);
           return true;
         },

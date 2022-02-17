@@ -56,19 +56,19 @@ class _MapScreenState extends State<MapScreen> {
             .toSet();
         Set<Marker> markers = journalsWithLatLng
             .map(
-              (e) => Marker(
-                markerId: MarkerId(e.id),
+              (j) => Marker(
+                markerId: MarkerId(j.id),
                 infoWindow: InfoWindow(
-                  title: e.title,
+                  title: j.title,
                   snippet: DateFormat.yMMMd(Platform.localeName)
-                      .format(e.dateCreated),
+                      .format(j.dateCreated),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => EditorScreen(journal: j),
+                    ),
+                  ),
                 ),
-                position: LatLng(e.latitude!, e.longitude!),
-                onTap: () {
-                  Navigator.of(context).pushReplacementNamed(
-                      EditorScreen.routeName,
-                      arguments: e);
-                },
+                position: LatLng(j.latitude!, j.longitude!),
               ),
             )
             .toSet();
@@ -118,7 +118,6 @@ class _MapScreenState extends State<MapScreen> {
     if (ModalRoute.of(context)?.settings.arguments is Tuple2<bool, LatLng?>) {
       final args =
           (ModalRoute.of(context)?.settings.arguments as Tuple2<bool, LatLng?>);
-      print(args.toString());
       isSelectingLocation = args.item1;
       pickedLocation ??= args.item2;
     }
