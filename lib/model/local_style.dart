@@ -19,8 +19,13 @@ class LocalStyle extends ChangeNotifier {
     required this.language,
   });
 
-  LocalStyle.loadPackaged() {
-    rootBundle.loadString('assets/locale.txt').then((str) {
+  static Future<LocalStyle> loadPackaged() {
+    return rootBundle.loadString('assets/locale.txt').then((str) {
+      Color foregroundColor = Colors.black;
+      Color backgroundColor = Colors.white;
+      TextDirection direction = TextDirection.ltr;
+      String language = "en_US";
+
       var lines = str.split('\n');
       for (var line in lines) {
         if (line.contains('lang')) {
@@ -42,6 +47,20 @@ class LocalStyle extends ChangeNotifier {
           direction = TextDirection.values[int.parse(dir)];
         }
       }
-    }).onError((error, stackTrace) => null);
+
+      return LocalStyle(
+        foregroundColor: foregroundColor,
+        backgroundColor: backgroundColor,
+        direction: direction,
+        language: language,
+      );
+    }).onError(
+      (error, stackTrace) => LocalStyle(
+        foregroundColor: Colors.black,
+        backgroundColor: Colors.white,
+        direction: TextDirection.ltr,
+        language: "en_US",
+      ),
+    );
   }
 }
