@@ -187,7 +187,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
     return Drawer(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          bottomRight: Radius.circular(128.0),
+          bottomRight: Radius.circular(64.0),
         ),
       ),
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -196,13 +196,10 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                bottomRight: Radius.circular(32.0),
-              ),
               gradient: LinearGradient(
                 colors: [
                   theme.colorScheme.primary,
-                  theme.colorScheme.inversePrimary,
+                  theme.colorScheme.secondary.withOpacity(0.5),
                 ],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
@@ -274,7 +271,10 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
       ),
       drawer: drawer,
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).cardColor,
+        ),
         onPressed: () => showModalBottomSheet(
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(

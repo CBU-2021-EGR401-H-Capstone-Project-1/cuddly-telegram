@@ -149,16 +149,16 @@ class _EditorScreenState extends State<EditorScreen> {
         ),
         value: 'delete',
       ),
-      DropdownMenuItem(
-        child: Row(
-          children: [
-            const Icon(Icons.bug_report, color: Colors.green),
-            const SizedBox(width: 8),
-            Text('Debug', style: Theme.of(context).textTheme.button),
-          ],
-        ),
-        value: 'debug',
-      )
+      // DropdownMenuItem(
+      //   child: Row(
+      //     children: [
+      //       const Icon(Icons.bug_report, color: Colors.green),
+      //       const SizedBox(width: 8),
+      //       Text('Debug', style: Theme.of(context).textTheme.button),
+      //     ],
+      //   ),
+      //   value: 'debug',
+      // )
     ];
   }
 

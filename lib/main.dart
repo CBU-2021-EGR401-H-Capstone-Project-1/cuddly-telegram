@@ -5,12 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:cuddly_telegram/model/local_style.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/file_browser_screen.dart';
-<<<<<<< HEAD
 import 'package:cuddly_telegram/screens/editor_screen.dart';
 import 'package:cuddly_telegram/screens/file_browser_screen.dart';
 import 'package:cuddly_telegram/widgets/localized_style.dart';
-=======
->>>>>>> ecee9aacc2a3087f23cc28899bddd5df5b1a00b6
 
 void main() {
   runApp(const MyApp());
@@ -52,13 +49,6 @@ class MyApp extends StatelessWidget {
       bodySmall: TextStyle(fontSize: 12, fontFamily: 'Fira Sans'),
     );
 
-    final ThemeData theme = ThemeData(
-      brightness: Brightness.light,
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-      fontFamily: 'Fira Sans',
-      textTheme: textTheme,
-    );
-
     var routes = {
       FileBrowserScreen.routeName: (ctx) => const FileBrowserScreen(),
       MapScreen.routeName: (ctx) => const MapScreen(),
@@ -67,20 +57,25 @@ class MyApp extends StatelessWidget {
     return LocalizedStyle(
       child: Consumer<LocalStyle>(
         builder: (ctx, style, wdgt) {
+          final ThemeData theme = ThemeData(
+            brightness: Brightness.light,
+            colorScheme: const ColorScheme.light().copyWith(
+              background: style.backgroundColor,
+              surface: style.backgroundColor,
+              onSecondary: style.foregroundColor,
+              onBackground: style.foregroundColor,
+              onSurface: style.foregroundColor,
+              onError: style.foregroundColor,
+            ),
+            fontFamily: 'Fira Sans',
+            textTheme: textTheme,
+          );
+
           return ChangeNotifierProvider(
             create: (context) => JournalStore({}),
             child: MaterialApp(
               title: 'Journal',
-              theme: ThemeData.from(
-                colorScheme: const ColorScheme.light().copyWith(
-                  background: style.backgroundColor,
-                  surface: style.backgroundColor,
-                  onSecondary: style.foregroundColor,
-                  onBackground: style.foregroundColor,
-                  onSurface: style.foregroundColor,
-                  onError: style.foregroundColor,
-                ),
-              ),
+              theme: theme,
               routes: routes,
               initialRoute: FileBrowserScreen.routeName,
             ),
