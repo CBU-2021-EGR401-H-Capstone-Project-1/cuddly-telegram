@@ -5,6 +5,7 @@ import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:path_provider/path_provider.dart';
 
 class IOHelper {
+  static var journalCount = 0;
   static Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
@@ -40,7 +41,8 @@ class IOHelper {
         // decrypt
         final contents = await file.readAsString();
         final journalStore = JournalStore.fromJson(jsonDecode(contents));
-        print(journalStore);
+        // print(journalStore);
+        journalCount++;
         return journalStore;
       } else {
         await file.create();

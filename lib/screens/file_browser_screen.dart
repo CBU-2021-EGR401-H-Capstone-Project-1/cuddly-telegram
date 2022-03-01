@@ -4,6 +4,8 @@ import 'package:cuddly_telegram/model/journal.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/editor_screen.dart';
 import 'package:cuddly_telegram/screens/map_screen.dart';
+import 'package:cuddly_telegram/screens/calendar_events_screen.dart';
+
 import 'package:cuddly_telegram/utility/io_helper.dart';
 import 'package:cuddly_telegram/widgets/file_browser_screen/journal_item.dart';
 import 'package:flutter/material.dart';
@@ -140,6 +142,25 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
               onTap: () {
                 navigator.pop();
                 navigator.pushNamed(MapScreen.routeName);
+              },
+              tileColor: Theme.of(context).colorScheme.onPrimary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(128.0),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ListTile(
+              leading: Icon(
+                Icons.map,
+                color: theme.colorScheme.tertiary,
+              ),
+              title: const Text('Calendar'),
+              onTap: () {
+                navigator.pop();
+                navigator.pushNamed(MyHomePage.routeName);
               },
               tileColor: Theme.of(context).colorScheme.onPrimary,
               shape: RoundedRectangleBorder(

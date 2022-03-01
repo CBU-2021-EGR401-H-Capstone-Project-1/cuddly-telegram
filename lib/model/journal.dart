@@ -19,6 +19,7 @@ class Journal {
   double? latitude;
   double? longitude;
   // TODO Reminders/notifications
+  DateTime? calendarDate;
 
   Journal({required this.title, required this.document});
 
