@@ -40,7 +40,6 @@ class IOHelper {
         // decrypt
         final contents = await file.readAsString();
         final journalStore = JournalStore.fromJson(jsonDecode(contents));
-        print(journalStore);
         return journalStore;
       } else {
         await file.create();

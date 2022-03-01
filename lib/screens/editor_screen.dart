@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cuddly_telegram/model/journal.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/map_screen.dart';
@@ -23,7 +25,6 @@ class _EditorScreenState extends State<EditorScreen> {
   void onDropdownSelect(String? newValue, BuildContext context) {
     switch (newValue) {
       case 'save':
-        print(widget.journal);
         Provider.of<JournalStore>(context, listen: false).save(widget.journal);
         IOHelper.writeJournalStore(
             Provider.of<JournalStore>(context, listen: false));
@@ -58,7 +59,6 @@ class _EditorScreenState extends State<EditorScreen> {
         break;
       case 'setLocation':
         LatLng? currentLocation;
-        print("Pre Set-Location: ${widget.journal}");
         if (widget.journal.latitude != null &&
             widget.journal.longitude != null) {
           currentLocation =
@@ -71,15 +71,15 @@ class _EditorScreenState extends State<EditorScreen> {
           if (latLng is LatLng) {
             widget.journal.latitude = latLng.latitude;
             widget.journal.longitude = latLng.longitude;
-            print(latLng);
-            print(widget.journal.latitude);
-            print(widget.journal.longitude);
           }
           final journalStore =
               Provider.of<JournalStore>(context, listen: false);
           journalStore.save(widget.journal);
           IOHelper.writeJournalStore(journalStore);
         });
+        break;
+      case 'debug':
+        print(jsonEncode(widget.journal.document.toDelta().toJson()));
         break;
       default:
         break;
@@ -149,12 +149,23 @@ class _EditorScreenState extends State<EditorScreen> {
         ),
         value: 'delete',
       ),
+      DropdownMenuItem(
+        child: Row(
+          children: [
+            const Icon(Icons.bug_report, color: Colors.green),
+            const SizedBox(width: 8),
+            Text('Debug', style: Theme.of(context).textTheme.button),
+          ],
+        ),
+        value: 'debug',
+      )
     ];
   }
 
   PreferredSizeWidget appBar(BuildContext context) {
     return AppBar(
       title: Text(widget.journal.title),
+      titleSpacing: 0.0,
       actions: [
         DropdownButtonHideUnderline(
           child: DropdownButton<String>(
