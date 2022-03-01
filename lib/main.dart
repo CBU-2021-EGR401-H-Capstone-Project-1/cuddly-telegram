@@ -1,8 +1,11 @@
-import 'package:cuddly_telegram/screens/file_browser_screen.dart';
+import 'package:cuddly_telegram/Encryption/AES_RSA_Encryption.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import 'package:cuddly_telegram/Encryption/AES_RSA_Encryption.dart';
+import 'package:cuddly_telegram/model/document_store.dart';
+import 'package:cuddly_telegram/screens/file_browser_screen.dart';
+import 'package:cuddly_telegram/utility/io_helper.dart';
 import 'package:cuddly_telegram/screens/editor_screen.dart';
-import 'package:flutter_quill/models/documents/document.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,19 +14,23 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+
+
   @override
   Widget build(BuildContext context) {
     var routes = {
-      FileBrowserScreen.routeName: (ctx) =>
-          FileBrowserScreen(documents: List.filled(100, Document())),
+      FileBrowserScreen.routeName: (ctx) => const FileBrowserScreen(),
       EditorScreen.routeName: (ctx) => EditorScreen(),
     };
 
-    return MaterialApp(
-      title: 'Journal',
-      theme: ThemeData.from(colorScheme: const ColorScheme.light()),
-      routes: routes,
-      initialRoute: FileBrowserScreen.routeName,
+    return ChangeNotifierProvider(
+      create: (context) => DocumentStore([]),
+      child: MaterialApp(
+        title: 'Journal',
+        theme: ThemeData.from(colorScheme: const ColorScheme.light()),
+        routes: routes,
+        initialRoute: FileBrowserScreen.routeName,
+      ),
     );
   }
 }

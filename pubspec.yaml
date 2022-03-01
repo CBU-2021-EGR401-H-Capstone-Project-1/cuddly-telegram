@@ -29,12 +29,34 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons:
-  flutter_quill:
+  cupertino_icons: ^1.0.4
+  flutter_quill: ^3.9.2
+  provider: ^6.0.2
+  json_annotation: ^4.4.0
+  path_provider: ^2.0.8
+  permission_handler: ^8.3.0
+  dart_jsonwebtoken: ^2.4.0
+  cryptography: ^2.0.5
+  cryptlib: ^0.0.3
+  crypto_keys: ^0.3.0
+  aes_crypt: ^0.1.1
+  fast_rsa: ^3.4.0
+  basic_utils: ^4.2.0
+  encrypt: ^5.0.1
+  rsa_encrypt: ^2.0.0
+  pointycastle: ^3.5.1
+  asn1lib: ^1.1.0
+  crypton: ^2.0.3
+  archive: ^3.2.1
+  flutter_aes_ecb_pkcs5: ^0.1.2
+  crypto: ^3.0.1
+  cryptoutils: ^0.5.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner:
+  json_serializable: 
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
