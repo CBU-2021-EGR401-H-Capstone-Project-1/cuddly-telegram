@@ -5,8 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:cuddly_telegram/model/local_style.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/file_browser_screen.dart';
-import 'package:cuddly_telegram/screens/editor_screen.dart';
-import 'package:cuddly_telegram/screens/file_browser_screen.dart';
 import 'package:cuddly_telegram/widgets/localized_style.dart';
 
 void main() {

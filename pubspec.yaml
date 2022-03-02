@@ -43,12 +43,6 @@ dependencies:
   google_maps_flutter: ^2.1.1
   geolocator: ^8.1.1
   tuple: ^2.0.0
-  cupertino_icons: ^1.0.4
-  flutter_quill: ^3.9.2
-  provider: ^6.0.2
-  json_annotation: ^4.4.0
-  path_provider: ^2.0.8
-  permission_handler: ^8.3.0
   dart_jsonwebtoken: ^2.4.0
   cryptography: ^2.0.5
   cryptlib: ^0.0.3
