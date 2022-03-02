@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:cuddly_telegram/screens/map_screen.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'package:cuddly_telegram/model/local_style.dart';
@@ -16,6 +21,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    deviceInfo.androidInfo.then((androidInfo) {
+      if (defaultTargetPlatform == TargetPlatform.android &&
+          androidInfo.version.sdkInt != null &&
+          androidInfo.version.sdkInt! >= 29) {
+        // Enable hybrid composition if the device is
+        // running Android 10 (Q) or greater.
+        // Hybrid composition will run poorly on devices running
+        // operating systems before 10 (Q).
+        AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
+      }
+    });
+
     const TextTheme textTheme = TextTheme(
       displayLarge: TextStyle(fontSize: 57.0, fontFamily: 'Abril Fatface'),
       displayMedium: TextStyle(fontSize: 45, fontFamily: 'Abril Fatface'),
