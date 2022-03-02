@@ -1,17 +1,16 @@
 // ignore_for_file: non_constant_identifier_names
-import 'package:basic_utils/basic_utils.dart';
+import 'dart:convert';
+import 'package:archive/archive.dart' as GZIP;
 import 'package:cuddly_telegram/Encryption/Read_Write.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:crypton/crypton.dart' as crypton;
-import 'dart:math' as Math;
-import 'dart:convert' as convert;
 class App_Encrypt {
 
 
   static final _Key = encrypt.Key.fromSecureRandom(32);
   static final _IV = encrypt.IV.fromLength(16);
   static final _RSAKeyPair = crypton.RSAKeypair.fromRandom();
-
+  static final _SetRsaPub = _RSAKeyPair;
   //Generates a random 32 Character key. This key will be used to initialize the the getAESInit method.
   get getKey {
     return _Key;
@@ -22,8 +21,8 @@ class App_Encrypt {
   }
 
   //Generates an RSA private/public key pairing instance for the RSA and PKCS1 signing algorithm. RSAKeyPair datatype found in the crypton.dart package.
-  getRSAKeyPairing() {
-    return _RSAKeyPair;
+  getRSAPubKey() {
+    return _SetRsaPub;
   }
 
 
@@ -42,23 +41,15 @@ class App_Encrypt {
 
   //Creates an initializer key for the AES encryption/decryption Algorithm. Encrypter Data Type fund in the encrypt.dart package.
   dynamic getAESInit(key) {
-    final init = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.ctr, padding: null));
+    final init = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cfb64));
     return init;
   }
 
 }
 
 main() async {
-  //   var display = encrypt_AES("I FUCKING DID IT");
-  //    var display2 = encrypt_RSA(display);
-      //var display3 = decryptRSA("hwgGcGkMjM+3rxWsliUN2wpLurTTX2As7F0oJcLSGSs1zPpZs9xh7DNS15Bma1jAHdp3Aw/ucvfk0LnLshsg5ZMuCBBV0Y6iP0n1klTs4Y/Cr1U3v4+nuli42ZBSe7ecJd/ImNDk41+Fl6OQycKlWSCO1AYT0WiCPZlWVR/zIu0f9m5kAQCYJZr9NFV2LwOiKdeKe6ADJuov+5vIdBx51kSiqixTv24Vk+X+twOsXgZoSSvMcTcC5NDtU/s9NPru0vdGa3wWaPXKKoz37sA33FGhw0nGSrPoBWIoKa4GS6TiJBNXMp7qZpadC3IIV68vHUw4+zzmr4EOlWO/T2aMoQ==");
-      //var display4 = decryptAES("uOfSa/3b+2DKSyE4YwY0rcbZP0GCYbC0WE+eN15Z5g==", "A+KNPztmqMbBYAXMyYp2Z6BgY3cgBq4VBUIQrbJm70s=");
-  // print(display);
-  // print(display2);
-    //print(display3);
-    //print(display4);
-  await Reader_WriterEncrypt('/Users/levi/Library/CloudStorage/OneDrive-CaliforniaBaptistUniversity/Capstone/Capstone_AESRSA_Hybrid_JavaVersion/cuddly_telegram/lib/Encryption/test.txt');
- // await Reader_WriterDecrypt('/Users/levi/Library/CloudStorage/OneDrive-CaliforniaBaptistUniversity/Capstone/Capstone_AESRSA_Hybrid_JavaVersion/cuddly_telegram/lib/Encryption/test.txt');
+  //await Reader_WriterEncrypt('/Users/ladmin/OneDrive - California Baptist University/Capstone_Current/lib/Encryption/test.txt');
+  await Reader_WriterDecrypt('/Users/ladmin/OneDrive - California Baptist University/Capstone_Current/lib/Encryption/test.txt');
 }
 
 Future<dynamic> Reader_WriterEncrypt(dynamic filePath) async {
@@ -71,44 +62,49 @@ Future<dynamic> Reader_WriterEncrypt(dynamic filePath) async {
   int y = 0;
   final passedInput = display.toString().length;
   for(int i = 0; i <= passedInput; i+=244 ){
-    if(y+244 > passedInput){
-      var pHolder = (y+244) - passedInput;
-      display2 = encrypt_RSA(display.toString().substring(i, passedInput - pHolder));
+    if(passedInput < 244){
+      display2 = encrypt_RSA(display.toString().substring(i, passedInput));
+    }
+    else if(y+244 > passedInput){
+      display2 = encrypt_RSA(display.toString().substring(i, passedInput));
     } else {
       display2 = encrypt_RSA(display.toString().substring(i, i + 244));
     }
-    display3 += "$display3""$display2";
+    display3 += display2;
     display2 = "";
     y += 244;
   }
   final keyInst = App_Encrypt().getKey.base64;
-  final rsaPvtInst = App_Encrypt().getRSAKeyPairing().privateKey.toString();
-  final rsaPubInst = App_Encrypt().getRSAKeyPairing().publicKey.toString();
-  await Read_Write().writeCounter(path, display3 + "\nAES_KEYinit: $keyInst" + "\nRSAPrivateKey: $rsaPvtInst" + "\nRSAPubKey: $rsaPubInst" + "\n length: ${display.length}");
+  final rsaPvtInst = App_Encrypt().getRSAPubKey().privateKey.toString();
+  await Read_Write().writeCounter(path, display3);
+  print(display3.toString().length);
+  print(keyInst);
+  print(rsaPvtInst);
 }
 
 
 Future<dynamic> Reader_WriterDecrypt(dynamic filePath) async {
   var path = Read_Write().userFile(setTakeUserPath(filePath));
   var holdFileContent = await Read_Write().testReading(path);
-  final holdFileLength = holdFileContent.toString().length;
-  String display = "";
-  String rsa_SectorDecrypt = "";
+   final holdFileLength = holdFileContent.toString().length;
+  dynamic display = "";
+  dynamic rsa_SectorDecrypt = "";
   int y = 0;
-  for(int i = 0; i <= holdFileLength; i+=244){
-    if(y+244 > holdFileLength){
-      var pHolder = (y+244) - holdFileLength;
-      display = decryptRSA(holdFileContent.toString().substring(i, holdFileLength - pHolder));
-    } else {
-      display = decryptRSA(holdFileContent.toString().substring(i, i+244));
+  for(int i = 0; i <= holdFileLength; i+=344){
+    if(holdFileLength < 344){
+      display = decryptRSA(holdFileContent);
     }
-    rsa_SectorDecrypt += "$rsa_SectorDecrypt""$display";
+    else if(y+344 > holdFileLength){
+      display = decryptRSA(holdFileContent.toString().substring(i, holdFileLength));
+    } else {
+      display = decryptRSA(holdFileContent.toString().substring(i, i+344));
+   }
+    rsa_SectorDecrypt += "$display";
     display = "";
-    y+=244;
+    y+=344;
   }
-  //dynamic display2 = decryptAES(display, "gEMwREuZvAD43otq5z6Nu2wf04r/rbxxzWw2wy2tbnk=");
-  dynamic display2 = decryptAES(display, App_Encrypt().getKey);
-  await Read_Write().writeCounter(path, display2);
+  dynamic display2 = decryptAES(rsa_SectorDecrypt, "/JWGTW1NXbi3Ch74VsoHUG9eyQE8AF4X7pQorwoc2PA=");
+  await Read_Write().writeCounter(path, "$display2");
 }
 
 //File Path Setter
@@ -126,21 +122,19 @@ dynamic encrypt_AES(dynamic valToEncrypt) {
   return cipherText;
 }
 
-//Decrypts a String encrypted by RSA with a PKCS1 signing. Takes the String from the encrypt_RSA method and Decrypts it. Returns a Hash.
-dynamic decryptRSA(dynamic RSA_Encrypt) {
-  //final rsaPvtKey = crypton.RSAPrivateKey.fromString("MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCSrcTPkgq6caf2IYNcCJkJoDZLmPJjrE3CB8OLfUhxvrrYL9PkFnAySPJ3hOvy+VEmwghdrzpWueHw30QDsCg5rQ8EdCZX+SjnjFPIiNd6/uR24c97CwQ+6W1lEJUsI5+dIczjrxyKtjlnJYVN54DN7nQe7RPWBQHAMx3hsOv/lfWepvVNgtXIUGWyP/69XJjRm833bYtJHLvfiQFprS2boudmGQtq95ZCYzwHJx+iz3I7dEKKKeljbNg+vi2QZBvNgw6p7LQfNiolL6scE2/ISevdiwbH2nygln5KwcLXxz/tgWZu5DH9+KW6kxYCyS4Oc2vRR2UrlONL6hDubRBfAgMBAAECggEAU3Dq/zITTFEPvaL++UIi3Sj4+jR931nLuk90XEvfBGX+ILHEloJ1PQXmeTtyhnxyP9wtqi3ewCtqbv5z0K1LlNPwMRZqIa2qKV7Y4sGF44BRM5ft0g9IUQm1o8K1ObDiQh9SUUvyrq5PJXBgzxqdWYkHIfi4Sg37Gv15SES/XFtyCOqpNODxn+heqxQFbdy1Lc4kQHWkRwPPy+G3EKX3Tk5g5m1Dw4b85t/9+HPJ796VvAg0tbys78g6PlKr+cu5lNGDVGd9dTVN48GOqpSfWWQ1BYai0epYYBzWlAVTI6O7pvKQahuuJigM9dT7IaCewFfj7CoEjfErtTN4NHFXIQKBgQDe0SWYIV3WbAczThFsM3mn235ecDBgU5QCbo7NU6ucSDAKO46pAFpO8BLcsloZGbjUKFE8cLq/bpCxOjGe53ydYSM0OlkgpsR+Lx6sB6z6ztN9cFk+g+2KFUHMM+Oz0HNvVIIbjkTStz6ymcy8z/ibBQUkYUykolczqKyZ1wUFWQKBgQCohd5Lo2qC55hg2rxSnIyGZvcQljV1XGUYT+lHFxV+rKlZTvk5OaoIpPC3DkFXwXyk10m/C1klHog6lXEBqHsIlsnmV9OBQWj1FUIacu41tKYVJie2p9cRiXDpntAOgAk1F6EZ33RfMetTlzJBzoXrEtVmS6RWizTpufXdUl20dwKBgQCOihNXt/i0xBTzID0LD/8Cf+redTytUqo7yAg4mA8PgiqhUSpZOO2M1A3s+3eh2Q+hQU1+scr1zcBocAbwVbwlXc/MiIsd1TGcW35upNZm+ErZUzb0RCeAj0qxXHyNOouuK8yz3hZvCmTkknkkTJMIcHSyqkACjgvk80G/hIskuQKBgG+WLKqC620Acxp228oL1NTN6vx1qbIrWtltWHb1Jwt4wq3bKBUnRJpytN1ROB0mhiUUVMWGeyGkBOpdt7U0XTtDtS6rquXkbN4TlHC091xiYLKSUCuXGUaIblaTDQr85pvcKJVcK88426y+6c0/NdeA4gLZRVj01jWJJ+7Dsj5jAoGALtKt/cYA/NF6RbWLTSbuvt5NudCJYccMlGplKupfblgYBSHbh4KqNMJQKxEKNBTnaSPKq9ImaSARgH+EV8iwWKFT7KE3JRcWLaHEQGX8WJrz6nKmZXjsPPZx2mdylV/M2lPHqJhedIUnDQMEyfb3dQCnV97QWS4z/cg8+1r2+Ss=");
-  //final Decrypt = rsaPvtKey.decrypt(RSA_Encrypt);
-  final Decrypt = App_Encrypt().getRSAKeyPairing().privateKey.decrypt(RSA_Encrypt);
+//Decrypts a String encrypted by RSA with a PKCS1 signing. Takes the String from the encrypt_RSA method and Decrypts it.
+dynamic decryptRSA(dynamic RSA_Encrypt){
+  final rsaPvtKey = crypton.RSAPrivateKey.fromString("MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC2uTkrAdUVkaFFrHPZP6xO01HC929FcxBP74kZ8QcLy8pVOSAxxLdKFtr8b1r1Ea0A9ase+YgE3F66SBQ/CT7bGSabBHG47kQmz8VWoeytUwaZ/NeU4ybTjuE/a9KtfqL2ppjxmzMdA4UWoIF/GXCw6qolMPn9wxu/V2xHgderIp+c3kuS6C7GkHVpLxmPy7n6JcS7vyKBhpY/qoWF5+sDqGrOZ+6v/qAGsuTh1OGm7gj+LxQI2ctEhPvFpsYzgypV4VZ5iA3qHxXgLRwqlcH7dj5SG6j6hoxLpxwL4dO3tFRC6US9fX9aSt6Zf2YxSk8VKrPOzxNvzAcntCORRvgrAgMBAAECggEBAKv0tasWh1xL95RlDYT2mgZ4cipjxxB5j3FagBCsti/QsfHv169ebAtKZP1JIjUdVE1h5I86z1mbtX3jFUKZRdDU43LhBNC/Ud2gjBrSObSHPOAvhQX1mvVfMfUIWHSzh1NNRwOgRcLZLCc2F4fv/hBQVpy3cZvxQCyabikBNWAzlBqlu6bhveM5UBbgVWOz1FOPa8eZo5f7BXM9oLPwhPf/uKUMIqeZUuabH6l07Dx/gNJRaAaVwmMNXi43eGu82k/18oIJuNqPBzRLvB2owS/q0j/Wv9/7pFHZE/IiLQ5XVM7ITyq4odN3fderQ7ju+96u1jmZzF99oDrGnJUjFYkCgYEA9F25dOr58Siq0r+O7CJH7kULmW1pXdtZSnHwtQ2EfVvdMm99phTkE65ohTCK1SLQl7f37+jADKGh6iQodxG+nAkc8Ke12HJjgjCMrfVtVhxc5uyY5awTQHmD7DT57/1OO44zz53nt9/aF6h4b1JeosR9z5MYPjYWBNFWJiV4lJ8CgYEAv2w2v3eUoVb0fFIqsk+g04SBfT4VPCoXNT0kGpatAGEsbuWBZgYMhUfQ4Ql8qjcechWc41TjFlF/0o+xLbV4+EID+1O1+tL9A90sbkjtu+Zrw1B4bssWkgZ5Hg1uGsYU6Ru6D5pspZHv1N7zN6fOwE+VvSKZAFSHe+zAPeaJxPUCgYEAs/bmYzW+Fx3VGFpdHohsowyUa00JoUaursXU+PHYlh32fHNhfNO72MbEUPqb9DWsm1+wKC4oaeULgo1Yg8A8uVt4xb8tjBdKM5IfuOmbuSQwQx0RyWt9zijvwCCPxW+ukuu6OnfXNDKWwn+fGpT1/zdoVFvHKeHZO3kT0gockI8CgYAxGKc+GoSTkQLp9AUhcMz2E1FG9yppIP6M2B6vdx/uLf5AfzreGQUTFiVb4pwH6FU1u5des0H/Um3vao1uBNJ/EieFSaYuK/lbCVpA+xGGlQXktXn+KLakQ2bDL3yi/1UTqNni8J+XI8QYnApTpwWfS4pDVWFatVN+lG2GMt/5FQKBgCB3mAUPJBMCYkku2y0Ej525JnBb4ZMjdQBQkRn/VLHki9n4oHcPSlZcnrlIMFTBykE31lufS61qMdH/TTd0LveJrR0AkkJ7jdgIFENSOuJBXJKwKkTlK19nFEMJewdZAuJgE8tz66KhIaio9hLAPxsofPNRhY9x8ogYCbtY3b9o");
+  final Decrypt = rsaPvtKey.decrypt(RSA_Encrypt);
   return Decrypt;
-
   //RSA Decryption of file is working!!!
 }
 
 //Encrypts the hash from encrypt_AES. RSA PKCS1 signing can't encrypt anything higher than 2048 bits or 256 bytes. Dynamic method outputs a dynamic var that will hold a String.
 dynamic encrypt_RSA(dynamic RSA_Encrypt) {
-  dynamic Encrypt;
-   Encrypt = App_Encrypt().getRSAKeyPairing().publicKey.encrypt(RSA_Encrypt.toString());
-  return Encrypt;
+  var setPubKey = App_Encrypt().getRSAPubKey();
+  var getPubKey = setPubKey.publicKey.encrypt(RSA_Encrypt.toString());
+  return getPubKey;
 }
 
 //Decrypts the AES_ECB Encryption. It will take a String and output a String.
