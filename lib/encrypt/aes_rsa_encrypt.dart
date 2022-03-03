@@ -41,12 +41,11 @@ class AppEncrypt {
 }
 
 main() async {
-  //await Reader_WriterEncrypt('/Users/ladmin/OneDrive - California Baptist University/Capstone_Current/lib/Encryption/test.txt');
-  await readerWriterDecrypt(
-      '/Users/ladmin/OneDrive - California Baptist University/Capstone_Current/lib/Encryption/test.txt');
+  //await Reader_WriterEncrypt('/Users/ladmin/OneDrive - California Baptist University/Capstone_Current/cuddly_telegram/lib/encrypt/Testing.dart');
+  await Reader_WriterDecrypt('/Users/ladmin/OneDrive - California Baptist University/Capstone_Current/cuddly_telegram/lib/encrypt/Testing.dart', 'MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDXwVlvSvzKfg/F6Sq9eRBzn2E3+HUHV5EwiC5bIffVzlM40i0i1G/hheLktTXXeJ1ExnyDzAhWptPjGqfCj49VZKyO6Fv+R3SCdpQAO9K+PhxU6mMDn7k2Xd0zOghl4aR00YX/zKaOT26smXo49KNqBkFT3gLSuA6zDkWeXFQkC8BqbUrBOnS2Uo/mFocov6kZ/fxRgSziaXObxxX5XUAjYFjE139bW0cQOZcz1bTuIdu9rMDpinYVnwwgMsOOnpie/IEqF9QmGLuIpqkoRtEoBzzvKm8oxxqS53OL9Rx+GscgsiFLnKI0Kj3Mfh/s2W/fqeJx7GMGdCjT/lXXcvqNAgMBAAECggEBAIAeg8JP8D86jplCtauf6YIPYca/1pbOjBwashRR3n7rL4YtYLovFmUAgVS4uslCCXnet+/3x/fUxzw0BuzFHSNjTgjquD4OJoSWb5qX67Qm4+IU8UkknvJG2OTjkDsXu/XWudDFsR4O0zTRSr/pneSG5GIuEtUYkToIvpSkVR61d+GoJPupuGfUOj9UziDWHV/INyhbvTO9g/TIT6ilYLSBV0nST4BA1OgL05tPYoS4T66TBG31KWLZfI+DQf7m0u8ele8qtxNeNaFOqVXMvYIrfoknJqGhyKmv0T+05kfZ5duIwAAngX4+0DQEGxYsMh98c1aVRnGaSbBkqQavjMECgYEA/RfZ7EQfCP2t73kxTJ1g9GLEGSrHLYB6EHGAiLKeT6/3gyv0tdlYZO5n4xwn79aOzsKmc6B4ysrQeWzSx2Fwv4C32xZpYPOCXWodtB4jvLiSqAX+qZ9luyYyDKy5JMs0uYrdqkpoYIx59jzjKHVmWt+GyndCRgAGvNgCbQ+Af5ECgYEA2ju3ch54S+tKUL27voDlYMXzW3eydJTZ+kZ8wKUg02BaOcs2BIroxGgOKJVNBTHru+msbo0RzhO/wae57/CudSoSiwDHPcNc6h4csMg8sxLPNBwbd0dEiExBczc1dJDlL8nfNBEKdiZhfZuWrwN4GxL/0rLIE5K7yOpObcgKxT0CgYEA5uomCCy27CsX0RAP7MkCNrcOF7Ax/c/kjrAgB5iAXFA+UU1/fZMJ1Ty3SDzeKzLlJLvvxjs5Oj0FLGQfg43hore8B4ZRKwXBgZ1Z8IY3MO5t0CN4ECbAWJomu+2zFmDYgBi02bP9u2kvtXwj/Tvv4SVkA8H/k4Jeo1mqDPtB0CECgYADXdZ3oTaz3R5ZXoPt7WkcdBFMAO201LMEJGA6TJHUEPFzYMolicsLdJt7TspQYTPEw1cQoYZ7ylwz7ZV1uR3H2u1MTafFMSVWyz4gEAa3sHuXzzMxRN0uyRZdY6WkdbPDZ/bUg8rIhdENMgBCFOieak2d/3oMqz/QWqT5FpPr9QKBgQCAr4LYoOKCdigdb8QyiSD2C9soZZMEPIYs0MOfQT7FYlO+3tBrJbVzdcOPWM/G+HbThpr1b+7BqY4EM6vCt2SjFTcK0VR0lQxXv8PYukk720lhtvRIqYzH7lUiSpfFPqVCCT90RuPYKbFmVT7/YSdtcgZqIcJrDAVCywPI4fnPgA==', 'KmjbAFfddhIo8i7MtQJxrn2PS/FX0PFrE1h4GjFk0jI=');
 }
 
-Future<dynamic> readerWriterEncrypt(dynamic filePath) async {
+Future<dynamic> Reader_WriterEncrypt(dynamic filePath) async {
   var path = ReadWrite().userFile(setTakeUserPath(filePath));
   dynamic display;
   var holdFileContent = await ReadWrite().testReading(path);
@@ -75,7 +74,7 @@ Future<dynamic> readerWriterEncrypt(dynamic filePath) async {
   print(rsaPvtInst);
 }
 
-Future<dynamic> readerWriterDecrypt(dynamic filePath) async {
+Future<dynamic> Reader_WriterDecrypt(dynamic filePath, final rsaPvtKey, final aesKey) async {
   var path = ReadWrite().userFile(setTakeUserPath(filePath));
   var holdFileContent = await ReadWrite().testReading(path);
   final holdFileLength = holdFileContent.toString().length;
@@ -84,19 +83,18 @@ Future<dynamic> readerWriterDecrypt(dynamic filePath) async {
   int y = 0;
   for (int i = 0; i <= holdFileLength; i += 344) {
     if (holdFileLength < 344) {
-      display = decryptRSA(holdFileContent);
+      display = decryptRSA(holdFileContent, rsaPvtKey);
     } else if (y + 344 > holdFileLength) {
       display =
-          decryptRSA(holdFileContent.toString().substring(i, holdFileLength));
+          decryptRSA(holdFileContent.toString().substring(i, holdFileLength), rsaPvtKey);
     } else {
-      display = decryptRSA(holdFileContent.toString().substring(i, i + 344));
+      display = decryptRSA(holdFileContent.toString().substring(i, i + 344), rsaPvtKey);
     }
     rsaSectorDecrypt += "$display";
     display = "";
     y += 344;
   }
-  dynamic display2 = decryptAES(
-      rsaSectorDecrypt, "/JWGTW1NXbi3Ch74VsoHUG9eyQE8AF4X7pQorwoc2PA=");
+  dynamic display2 = decryptAES(rsaSectorDecrypt, "$aesKey");
   await ReadWrite().writeCounter(path, "$display2");
 }
 
@@ -117,9 +115,8 @@ dynamic encryptAES(dynamic valToEncrypt) {
 }
 
 //Decrypts a String encrypted by RSA with a PKCS1 signing. Takes the String from the encrypt_RSA method and Decrypts it.
-dynamic decryptRSA(dynamic rsaEncrypt) {
-  final rsaPvtKey = crypton.RSAPrivateKey.fromString(
-      "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC2uTkrAdUVkaFFrHPZP6xO01HC929FcxBP74kZ8QcLy8pVOSAxxLdKFtr8b1r1Ea0A9ase+YgE3F66SBQ/CT7bGSabBHG47kQmz8VWoeytUwaZ/NeU4ybTjuE/a9KtfqL2ppjxmzMdA4UWoIF/GXCw6qolMPn9wxu/V2xHgderIp+c3kuS6C7GkHVpLxmPy7n6JcS7vyKBhpY/qoWF5+sDqGrOZ+6v/qAGsuTh1OGm7gj+LxQI2ctEhPvFpsYzgypV4VZ5iA3qHxXgLRwqlcH7dj5SG6j6hoxLpxwL4dO3tFRC6US9fX9aSt6Zf2YxSk8VKrPOzxNvzAcntCORRvgrAgMBAAECggEBAKv0tasWh1xL95RlDYT2mgZ4cipjxxB5j3FagBCsti/QsfHv169ebAtKZP1JIjUdVE1h5I86z1mbtX3jFUKZRdDU43LhBNC/Ud2gjBrSObSHPOAvhQX1mvVfMfUIWHSzh1NNRwOgRcLZLCc2F4fv/hBQVpy3cZvxQCyabikBNWAzlBqlu6bhveM5UBbgVWOz1FOPa8eZo5f7BXM9oLPwhPf/uKUMIqeZUuabH6l07Dx/gNJRaAaVwmMNXi43eGu82k/18oIJuNqPBzRLvB2owS/q0j/Wv9/7pFHZE/IiLQ5XVM7ITyq4odN3fderQ7ju+96u1jmZzF99oDrGnJUjFYkCgYEA9F25dOr58Siq0r+O7CJH7kULmW1pXdtZSnHwtQ2EfVvdMm99phTkE65ohTCK1SLQl7f37+jADKGh6iQodxG+nAkc8Ke12HJjgjCMrfVtVhxc5uyY5awTQHmD7DT57/1OO44zz53nt9/aF6h4b1JeosR9z5MYPjYWBNFWJiV4lJ8CgYEAv2w2v3eUoVb0fFIqsk+g04SBfT4VPCoXNT0kGpatAGEsbuWBZgYMhUfQ4Ql8qjcechWc41TjFlF/0o+xLbV4+EID+1O1+tL9A90sbkjtu+Zrw1B4bssWkgZ5Hg1uGsYU6Ru6D5pspZHv1N7zN6fOwE+VvSKZAFSHe+zAPeaJxPUCgYEAs/bmYzW+Fx3VGFpdHohsowyUa00JoUaursXU+PHYlh32fHNhfNO72MbEUPqb9DWsm1+wKC4oaeULgo1Yg8A8uVt4xb8tjBdKM5IfuOmbuSQwQx0RyWt9zijvwCCPxW+ukuu6OnfXNDKWwn+fGpT1/zdoVFvHKeHZO3kT0gockI8CgYAxGKc+GoSTkQLp9AUhcMz2E1FG9yppIP6M2B6vdx/uLf5AfzreGQUTFiVb4pwH6FU1u5des0H/Um3vao1uBNJ/EieFSaYuK/lbCVpA+xGGlQXktXn+KLakQ2bDL3yi/1UTqNni8J+XI8QYnApTpwWfS4pDVWFatVN+lG2GMt/5FQKBgCB3mAUPJBMCYkku2y0Ej525JnBb4ZMjdQBQkRn/VLHki9n4oHcPSlZcnrlIMFTBykE31lufS61qMdH/TTd0LveJrR0AkkJ7jdgIFENSOuJBXJKwKkTlK19nFEMJewdZAuJgE8tz66KhIaio9hLAPxsofPNRhY9x8ogYCbtY3b9o");
+dynamic decryptRSA(dynamic rsaEncrypt, final pvtKey) {
+  final rsaPvtKey = crypton.RSAPrivateKey.fromString("$pvtKey");
   final decrypt = rsaPvtKey.decrypt(rsaEncrypt);
   return decrypt;
   //RSA Decryption of file is working!!!
