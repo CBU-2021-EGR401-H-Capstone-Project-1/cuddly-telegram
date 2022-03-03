@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class IOHelper {
   static Future<String> get _localPath async {
@@ -15,7 +15,7 @@ class IOHelper {
     return File('$path/documents.dat');
   }
 
-  static Future<File> writeDocumentStore(Map<String, dynamic> json) async {
+  static Future<File> writeJournalStore(JournalStore journalStore) async {
     // TODO Encrypt file
     final file = await _localFile;
     final fileExists = await file.exists();
@@ -23,14 +23,15 @@ class IOHelper {
       try {
         await file.create();
       } catch (e) {
-        print(e);
+        // TODO Catch FileSystemException from file.create
       }
     }
     // encrypt
+    final json = journalStore.toJson();
     return await file.writeAsString(jsonEncode(json));
   }
 
-  static Future<Map<String, dynamic>> readDocumentStore() async {
+  static Future<JournalStore> readJournalStore() async {
     // TODO Encrypt file
     try {
       final file = await _localFile;
@@ -38,14 +39,15 @@ class IOHelper {
       if (fileExists) {
         // decrypt
         final contents = await file.readAsString();
-        return jsonDecode(contents);
+        final journalStore = JournalStore.fromJson(jsonDecode(contents));
+        return journalStore;
       } else {
         await file.create();
-        return {};
+        return JournalStore({});
       }
     } catch (e) {
-      print(e);
-      return {};
+      // TODO Catch FileSystemException from file.create
+      return JournalStore({});
     }
   }
 }
