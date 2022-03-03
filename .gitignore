@@ -47,3 +47,5 @@ app.*.map.json
 /android/app/release
 /.vscode
 /android/app/src/main/AndroidManifest.xml
+
+local.properties
