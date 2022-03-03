@@ -15,7 +15,6 @@ class Journal {
   String title;
   quill.Document document;
   late DateTime dateCreated = DateTime.now();
-  // TODO Latitude/longitude
   double? latitude;
   double? longitude;
   // TODO Reminders/notifications
