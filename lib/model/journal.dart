@@ -17,6 +17,7 @@ class Journal {
   late DateTime dateCreated = DateTime.now();
   double? latitude;
   double? longitude;
+  String? passwordHash;
   // TODO Reminders/notifications
 
   Journal({required this.title, required this.document});
