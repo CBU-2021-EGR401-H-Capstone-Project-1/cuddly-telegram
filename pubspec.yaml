@@ -65,6 +65,7 @@ dependencies:
   flutter_aes_ecb_pkcs5: ^0.1.2
   crypto: ^3.0.1
   cryptoutils: ^0.5.0
+  crypt: ^4.2.1
 
 dev_dependencies:
   flutter_test:
