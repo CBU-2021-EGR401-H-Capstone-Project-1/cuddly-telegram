@@ -4,20 +4,21 @@ import 'package:crypton/crypton.dart' as crypton;
 import 'package:flutter/foundation.dart';
 
 class AppEncrypt {
-  static final _key = encrypt.Key.fromSecureRandom(32);
-  static final _iv = encrypt.IV.fromLength(16);
-  static final _rsaKeyPair = crypton.RSAKeypair.fromRandom();
-  static final _setRsaPub = _rsaKeyPair;
-  //Generates a random 32 Character key. This key will be used to initialize the the getAESInit method.
+  static final _key = encrypt.Key.fromSecureRandom(32); ///Global variable that holds the AES initializer.
+  static final _iv = encrypt.IV.fromLength(16); ///Global variable used to help randomize the AES initializer with an Initialization Vector.
+  static final _rsaKeyPair = crypton.RSAKeypair.fromRandom();///Global variable that sets and stores a RSA key pair.
+  static final _setRsaPub = _rsaKeyPair; ///Global variable meant to hold a single instance of the RSA key pairing. Important for For-loop
+
+  ///returns the value of the global variable _key.
   get getKey {
     return _key;
   }
-
+ ///returns the value of the global variable _iv.
   get getIV {
     return _iv;
   }
 
-  //Generates an RSA private/public key pairing instance for the RSA and PKCS1 signing algorithm. RSAKeyPair datatype found in the crypton.dart package.
+  ///returns the value of the variable _setRsaPub
   getRSAPubKey() {
     return _setRsaPub;
   }
