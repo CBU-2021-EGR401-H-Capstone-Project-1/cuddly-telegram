@@ -4,12 +4,15 @@ import 'package:cuddly_telegram/model/journal.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/map_screen.dart';
 import 'package:cuddly_telegram/utility/io_helper.dart';
+import 'package:cuddly_telegram/widgets/editor_screen/edit_password_alert_dialog.dart';
 import 'package:cuddly_telegram/widgets/editor_screen/edit_title_alert_dialog.dart';
+import 'package:cuddly_telegram/widgets/editor_screen/enter_password_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
+import 'package:crypt/crypt.dart';
 
 class EditorScreen extends StatefulWidget {
   const EditorScreen({Key? key, required this.journal}) : super(key: key);
@@ -22,7 +25,8 @@ class EditorScreen extends StatefulWidget {
 class _EditorScreenState extends State<EditorScreen> {
   final FocusNode _focusNode = FocusNode();
 
-  void onDropdownSelect(String? newValue, BuildContext context) {
+  void onDropdownSelect(String? newValue, BuildContext context) async {
+    final journalStore = Provider.of<JournalStore>(context, listen: false);
     switch (newValue) {
       case 'save':
         Provider.of<JournalStore>(context, listen: false).save(widget.journal);
@@ -48,8 +52,6 @@ class _EditorScreenState extends State<EditorScreen> {
                 setState(() {
                   widget.journal.title = newTitle;
                 });
-                final journalStore =
-                    Provider.of<JournalStore>(context, listen: false);
                 journalStore.save(widget.journal);
                 IOHelper.writeJournalStore(journalStore);
               },
@@ -72,11 +74,47 @@ class _EditorScreenState extends State<EditorScreen> {
             widget.journal.latitude = latLng.latitude;
             widget.journal.longitude = latLng.longitude;
           }
-          final journalStore =
-              Provider.of<JournalStore>(context, listen: false);
           journalStore.save(widget.journal);
           IOHelper.writeJournalStore(journalStore);
         });
+        break;
+      case 'password':
+        if (widget.journal.passwordHash != null) {
+          final String? password = await showDialog(
+            context: context,
+            builder: (context) => const EnterPasswordAlertDialog(),
+          );
+          print(Crypt.sha256(password!).toString());
+          print(Crypt.sha256(password).hash);
+          if (password != null &&
+              Crypt.sha256(widget.journal.passwordHash!).match(password)) {
+            final String? newPassword = await showDialog(
+              context: context,
+              builder: (context) => const EditPasswordAlertDialog(),
+            );
+            if (newPassword != null) {
+              final cryptString = Crypt.sha256(newPassword).toString();
+              print(cryptString);
+              print(Crypt.sha256(newPassword).hash);
+              widget.journal.passwordHash = cryptString;
+              journalStore.save(widget.journal);
+              IOHelper.writeJournalStore(journalStore);
+            }
+          }
+        } else {
+          final String? newPassword = await showDialog(
+            context: context,
+            builder: (context) => const EditPasswordAlertDialog(),
+          );
+          if (newPassword != null) {
+            final cryptString = Crypt.sha256(newPassword).toString();
+            print(cryptString);
+            print(Crypt.sha256(newPassword));
+            widget.journal.passwordHash = cryptString;
+            journalStore.save(widget.journal);
+            IOHelper.writeJournalStore(journalStore);
+          }
+        }
         break;
       case 'debug':
         print(jsonEncode(widget.journal.document.toDelta().toJson()));
@@ -109,9 +147,7 @@ class _EditorScreenState extends State<EditorScreen> {
         child: Row(
           children: [
             Icon(Icons.calendar_today, color: Theme.of(context).primaryColor),
-            const SizedBox(
-              width: 8,
-            ),
+            const SizedBox(width: 8),
             Text('Add to Calendar', style: Theme.of(context).textTheme.button),
           ],
         ),
@@ -141,13 +177,21 @@ class _EditorScreenState extends State<EditorScreen> {
         child: Row(
           children: [
             const Icon(Icons.delete, color: Colors.red),
-            const SizedBox(
-              width: 8,
-            ),
+            const SizedBox(width: 8),
             Text('Delete', style: Theme.of(context).textTheme.button),
           ],
         ),
         value: 'delete',
+      ),
+      DropdownMenuItem(
+        child: Row(
+          children: [
+            const Icon(Icons.lock_rounded, color: Colors.orange),
+            const SizedBox(width: 8),
+            Text('Set Password', style: Theme.of(context).textTheme.button),
+          ],
+        ),
+        value: 'password',
       ),
       // DropdownMenuItem(
       //   child: Row(
