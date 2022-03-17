@@ -18,17 +18,5 @@ class ReadWrite {
     return readLines;
   }
 }
-// main()async {
-//   try {
-//     var path = '/Users/ladmin/Desktop/hello.txt';
-//     Read_Write().userFile(path);
-//     var readLines = await testReading(path);
-//     String test = "FUCK DART";
-//     await Read_Write().writeCounter(path, test);
-//     var readLines2 = await testReading(path);
-//     print(readLines2);
-//   } catch (e){
-//     return 0;
-//   }
-// }
+
 

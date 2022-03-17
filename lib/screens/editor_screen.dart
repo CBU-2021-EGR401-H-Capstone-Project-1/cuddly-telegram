@@ -4,9 +4,7 @@ import 'package:cuddly_telegram/model/journal.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/map_screen.dart';
 import 'package:cuddly_telegram/utility/io_helper.dart';
-import 'package:cuddly_telegram/widgets/editor_screen/edit_password_alert_dialog.dart';
 import 'package:cuddly_telegram/widgets/editor_screen/edit_title_alert_dialog.dart';
-import 'package:cuddly_telegram/widgets/editor_screen/enter_password_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -79,42 +77,42 @@ class _EditorScreenState extends State<EditorScreen> {
         });
         break;
       case 'password':
-        if (widget.journal.passwordHash != null) {
-          final String? password = await showDialog(
-            context: context,
-            builder: (context) => const EnterPasswordAlertDialog(),
-          );
-          print(Crypt.sha256(password!).toString());
-          print(Crypt.sha256(password).hash);
-          if (password != null &&
-              Crypt.sha256(widget.journal.passwordHash!).match(password)) {
-            final String? newPassword = await showDialog(
-              context: context,
-              builder: (context) => const EditPasswordAlertDialog(),
-            );
-            if (newPassword != null) {
-              final cryptString = Crypt.sha256(newPassword).toString();
-              print(cryptString);
-              print(Crypt.sha256(newPassword).hash);
-              widget.journal.passwordHash = cryptString;
-              journalStore.save(widget.journal);
-              IOHelper.writeJournalStore(journalStore);
-            }
-          }
-        } else {
-          final String? newPassword = await showDialog(
-            context: context,
-            builder: (context) => const EditPasswordAlertDialog(),
-          );
-          if (newPassword != null) {
-            final cryptString = Crypt.sha256(newPassword).toString();
-            print(cryptString);
-            print(Crypt.sha256(newPassword));
-            widget.journal.passwordHash = cryptString;
-            journalStore.save(widget.journal);
-            IOHelper.writeJournalStore(journalStore);
-          }
-        }
+        // if (widget.journal.passwordHash != null) {
+        //   final String? password = await showDialog(
+        //     context: context,
+        //     builder: (context) => const EnterPasswordAlertDialog(),
+        //   );
+        //   print(Crypt.sha256(password!).toString());
+        //   print(Crypt.sha256(password).hash);
+        //   if (password != null &&
+        //       Crypt.sha256(widget.journal.passwordHash!).match(password)) {
+        //     final String? newPassword = await showDialog(
+        //       context: context,
+        //       builder: (context) => const EditPasswordAlertDialog(),
+        //     );
+        //     if (newPassword != null) {
+        //       final cryptString = Crypt.sha256(newPassword).toString();
+        //       print(cryptString);
+        //       print(Crypt.sha256(newPassword).hash);
+        //       widget.journal.passwordHash = cryptString;
+        //       journalStore.save(widget.journal);
+        //       IOHelper.writeJournalStore(journalStore);
+        //     }
+        //   }
+        // } else {
+        //   final String? newPassword = await showDialog(
+        //     context: context,
+        //     builder: (context) => const EditPasswordAlertDialog(),
+        //   );
+        //   if (newPassword != null) {
+        //     final cryptString = Crypt.sha256(newPassword).toString();
+        //     print(cryptString);
+        //     print(Crypt.sha256(newPassword));
+        //     widget.journal.passwordHash = cryptString;
+        //     journalStore.save(widget.journal);
+        //     IOHelper.writeJournalStore(journalStore);
+        //   }
+        // }
         break;
       case 'debug':
         print(jsonEncode(widget.journal.document.toDelta().toJson()));
