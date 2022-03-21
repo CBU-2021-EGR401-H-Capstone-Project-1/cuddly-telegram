@@ -10,7 +10,6 @@ import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
-import 'package:crypt/crypt.dart';
 
 class EditorScreen extends StatefulWidget {
   const EditorScreen({Key? key, required this.journal}) : super(key: key);
@@ -22,6 +21,8 @@ class EditorScreen extends StatefulWidget {
 
 class _EditorScreenState extends State<EditorScreen> {
   final FocusNode _focusNode = FocusNode();
+  late quill.QuillController controller;
+  late List<DropdownMenuItem<String>> dropdownItems = generateDropdownItems();
 
   void onDropdownSelect(String? newValue, BuildContext context) async {
     final journalStore = Provider.of<JournalStore>(context, listen: false);
@@ -85,7 +86,7 @@ class _EditorScreenState extends State<EditorScreen> {
     }
   }
 
-  List<DropdownMenuItem<String>> get dropdownItems {
+  List<DropdownMenuItem<String>> generateDropdownItems() {
     return [
       DropdownMenuItem(
         child: Row(
@@ -143,6 +144,17 @@ class _EditorScreenState extends State<EditorScreen> {
         ),
         value: 'delete',
       ),
+      if (controller.document.toPlainText().trim().compareTo("bible") == 0)
+        DropdownMenuItem(
+          child: Row(
+            children: [
+              const Icon(Icons.book, color: Colors.brown),
+              const SizedBox(width: 8),
+              Text('Bible', style: Theme.of(context).textTheme.button),
+            ],
+          ),
+          value: 'bible',
+        ),
       // DropdownMenuItem(
       //   child: Row(
       //     children: [
@@ -152,7 +164,7 @@ class _EditorScreenState extends State<EditorScreen> {
       //     ],
       //   ),
       //   value: 'debug',
-      // )
+      // ),
     ];
   }
 
@@ -166,6 +178,9 @@ class _EditorScreenState extends State<EditorScreen> {
             borderRadius: BorderRadius.circular(12.0),
             icon: Icon(Icons.more_vert_rounded,
                 color: Theme.of(context).primaryIconTheme.color),
+            onTap: () => setState(() {
+              dropdownItems = generateDropdownItems();
+            }),
             onChanged: (newValue) => onDropdownSelect(newValue, context),
             items: dropdownItems,
           ),
@@ -174,7 +189,7 @@ class _EditorScreenState extends State<EditorScreen> {
     );
   }
 
-  Widget body(quill.QuillController controller) {
+  Widget get body {
     return Column(
       children: [
         Expanded(
@@ -222,11 +237,12 @@ class _EditorScreenState extends State<EditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = quill.QuillController(
+    controller = quill.QuillController(
       document: widget.journal.document,
       selection: const TextSelection.collapsed(offset: 0),
       keepStyleOnNewLine: false,
     );
+
     return Scaffold(
       appBar: appBar(context),
       body: WillPopScope(
@@ -239,7 +255,7 @@ class _EditorScreenState extends State<EditorScreen> {
           return true;
         },
         child: SafeArea(
-          child: body(controller),
+          child: body,
         ),
       ),
     );
