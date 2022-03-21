@@ -76,44 +76,6 @@ class _EditorScreenState extends State<EditorScreen> {
           IOHelper.writeJournalStore(journalStore);
         });
         break;
-      case 'password':
-        // if (widget.journal.passwordHash != null) {
-        //   final String? password = await showDialog(
-        //     context: context,
-        //     builder: (context) => const EnterPasswordAlertDialog(),
-        //   );
-        //   print(Crypt.sha256(password!).toString());
-        //   print(Crypt.sha256(password).hash);
-        //   if (password != null &&
-        //       Crypt.sha256(widget.journal.passwordHash!).match(password)) {
-        //     final String? newPassword = await showDialog(
-        //       context: context,
-        //       builder: (context) => const EditPasswordAlertDialog(),
-        //     );
-        //     if (newPassword != null) {
-        //       final cryptString = Crypt.sha256(newPassword).toString();
-        //       print(cryptString);
-        //       print(Crypt.sha256(newPassword).hash);
-        //       widget.journal.passwordHash = cryptString;
-        //       journalStore.save(widget.journal);
-        //       IOHelper.writeJournalStore(journalStore);
-        //     }
-        //   }
-        // } else {
-        //   final String? newPassword = await showDialog(
-        //     context: context,
-        //     builder: (context) => const EditPasswordAlertDialog(),
-        //   );
-        //   if (newPassword != null) {
-        //     final cryptString = Crypt.sha256(newPassword).toString();
-        //     print(cryptString);
-        //     print(Crypt.sha256(newPassword));
-        //     widget.journal.passwordHash = cryptString;
-        //     journalStore.save(widget.journal);
-        //     IOHelper.writeJournalStore(journalStore);
-        //   }
-        // }
-        break;
       case 'debug':
         print(jsonEncode(widget.journal.document.toDelta().toJson()));
         break;
@@ -180,16 +142,6 @@ class _EditorScreenState extends State<EditorScreen> {
           ],
         ),
         value: 'delete',
-      ),
-      DropdownMenuItem(
-        child: Row(
-          children: [
-            const Icon(Icons.lock_rounded, color: Colors.orange),
-            const SizedBox(width: 8),
-            Text('Set Password', style: Theme.of(context).textTheme.button),
-          ],
-        ),
-        value: 'password',
       ),
       // DropdownMenuItem(
       //   child: Row(

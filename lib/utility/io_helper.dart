@@ -13,6 +13,7 @@ class IOHelper {
   /// On iOS, this uses the `NSDocumentDirectory` API.
   static Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
+    print(directory.path);
     return directory.path;
   }
 
@@ -55,8 +56,8 @@ class IOHelper {
     final json = journalStore.toJson();
     final fileContents = await encrypt.encryptReadWrite(jsonEncode(json));
     await writeFile(file, fileContents.item1);
-    await writeFile(rsaFile, fileContents.item2);
-    await writeFile(aesFile, fileContents.item3);
+    await writeFile(aesFile, fileContents.item2);
+    await writeFile(rsaFile, fileContents.item3);
   }
 
   static Future<JournalStore> readJournalStore() async {
@@ -68,11 +69,13 @@ class IOHelper {
       final contents = await readFile(file);
       final rsa = await readFile(rsaFile);
       final aes = await readFile(aesFile);
-      final decryptedContents = await encrypt.decryptReadWrite(contents, aes, rsa);
+      final decryptedContents =
+          await encrypt.decryptReadWrite(contents, aes, rsa);
       final json = jsonDecode(decryptedContents);
       return JournalStore.fromJson(json);
     } catch (e) {
       // TODO Catch FileSystemException from file.create
+      print(e.toString());
       return JournalStore({});
     }
   }
