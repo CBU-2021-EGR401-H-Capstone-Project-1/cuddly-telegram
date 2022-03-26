@@ -1,14 +1,20 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cuddly_telegram/model/journal.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/screens/map_screen.dart';
 import 'package:cuddly_telegram/utility/io_helper.dart';
+import 'package:cuddly_telegram/widgets/editor_screen/edit_notification_alert_dialog.dart';
 import 'package:cuddly_telegram/widgets/editor_screen/edit_title_alert_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 import 'package:tuple/tuple.dart';
 
 class EditorScreen extends StatefulWidget {
@@ -23,59 +29,175 @@ class _EditorScreenState extends State<EditorScreen> {
   final FocusNode _focusNode = FocusNode();
   late quill.QuillController controller;
   late List<DropdownMenuItem<String>> dropdownItems = generateDropdownItems();
+  final FlutterLocalNotificationsPlugin notificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
-  void onDropdownSelect(String? newValue, BuildContext context) async {
-    final journalStore = Provider.of<JournalStore>(context, listen: false);
-    switch (newValue) {
-      case 'save':
-        Provider.of<JournalStore>(context, listen: false).save(widget.journal);
-        IOHelper.writeJournalStore(
-            Provider.of<JournalStore>(context, listen: false));
-        break;
-      case 'delete':
-        Provider.of<JournalStore>(context, listen: false)
-            .remove(widget.journal);
-        IOHelper.writeJournalStore(
-            Provider.of<JournalStore>(context, listen: false));
-        Navigator.of(context).pop();
-        break;
-      case 'editTitle':
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          useSafeArea: true,
-          builder: (context) {
-            return EditTitleAlertDialog(
-              journal: widget.journal,
-              onSavePressed: (newTitle) {
-                setState(() {
-                  widget.journal.title = newTitle;
-                });
-                journalStore.save(widget.journal);
-                IOHelper.writeJournalStore(journalStore);
+  Future<void> _save() async {
+    Provider.of<JournalStore>(context, listen: false).save(widget.journal);
+    await IOHelper.writeJournalStore(
+        Provider.of<JournalStore>(context, listen: false));
+  }
+
+  Future<void> _delete() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.red.shade900.withOpacity(0.75),
+      barrierLabel: 'Warning',
+      useSafeArea: true,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(
+            'Are you sure?',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
+          actions: [
+            ElevatedButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(ctx).pop(),
+            ),
+            ElevatedButton(
+              child: const Text('Delete'),
+              onPressed: () async {
+                Provider.of<JournalStore>(context, listen: false)
+                    .remove(widget.journal);
+                await IOHelper.writeJournalStore(
+                    Provider.of<JournalStore>(context, listen: false));
+                Navigator.of(ctx).pop();
+                Navigator.of(context).pop();
               },
-            );
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+              ),
+            )
+          ],
+          content: Text(
+            'You cannot undo this deletion.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        );
+      },
+    );
+  }
+
+  void _updateTitle() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      useSafeArea: true,
+      builder: (context) {
+        return EditTitleAlertDialog(
+          journal: widget.journal,
+          onSavePressed: (newTitle) {
+            setState(() {
+              widget.journal.title = newTitle;
+            });
+            _save();
           },
         );
+      },
+    );
+  }
+
+  void _setLocation() {
+    final journalStore = Provider.of<JournalStore>(context, listen: false);
+    LatLng? currentLocation;
+    if (widget.journal.latitude != null && widget.journal.longitude != null) {
+      currentLocation =
+          LatLng(widget.journal.latitude!, widget.journal.longitude!);
+    }
+    Navigator.of(context)
+        .pushNamed(MapScreen.routeName,
+            arguments: Tuple2<bool, LatLng?>(true, currentLocation))
+        .then((latLng) {
+      if (latLng is LatLng) {
+        widget.journal.latitude = latLng.latitude;
+        widget.journal.longitude = latLng.longitude;
+      }
+      journalStore.save(widget.journal);
+      IOHelper.writeJournalStore(journalStore);
+    });
+  }
+
+  Future<void> _updateReminder() async {
+    if (widget.journal.notificationId != null) {
+      await notificationsPlugin.cancel(widget.journal.notificationId!);
+      widget.journal.notificationId = null;
+      _save();
+    } else {
+      final metadata =
+          await showDialog<Tuple4<String, String, TimeOfDay, DateTime>>(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return EditNotificationAlertDialog(
+                journal: widget.journal,
+                onSavePressed: (metadata) {
+                  return metadata;
+                },
+              );
+            },
+          );
+        },
+      );
+      if (metadata != null) {
+        final random = Random();
+        final notificationId = random.nextInt(100000);
+        final title = metadata.item1;
+        final body = metadata.item2;
+        final time = metadata.item3;
+        final date = metadata.item4;
+        tz.initializeTimeZones();
+        final location =
+            tz.getLocation(await FlutterNativeTimezone.getLocalTimezone());
+        final tzDateTime = tz.TZDateTime(
+            location, date.year, date.month, date.day, time.hour, time.minute);
+        final androidDetails = AndroidNotificationDetails(
+          'com.egr402.cuddly_telegram',
+          'Reminders',
+          category: 'CATEGORY_REMINDER',
+          color: Theme.of(context).colorScheme.primary,
+          subText: widget.journal.title,
+        );
+        final details = NotificationDetails(android: androidDetails);
+        await notificationsPlugin.zonedSchedule(
+          notificationId,
+          title,
+          body,
+          tzDateTime,
+          details,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+          androidAllowWhileIdle: true,
+          payload: widget.journal.id,
+        );
+        print(await notificationsPlugin.pendingNotificationRequests());
+        widget.journal.notificationId = notificationId;
+        _save();
+      } else {
+        print("Could not retrieve metadata");
+      }
+    }
+  }
+
+  void onDropdownSelect(String? newValue, BuildContext context) async {
+    switch (newValue) {
+      case 'save':
+        _save();
+        break;
+      case 'delete':
+        _delete();
+        break;
+      case 'editTitle':
+        _updateTitle();
         break;
       case 'setLocation':
-        LatLng? currentLocation;
-        if (widget.journal.latitude != null &&
-            widget.journal.longitude != null) {
-          currentLocation =
-              LatLng(widget.journal.latitude!, widget.journal.longitude!);
-        }
-        Navigator.of(context)
-            .pushNamed(MapScreen.routeName,
-                arguments: Tuple2<bool, LatLng?>(true, currentLocation))
-            .then((latLng) {
-          if (latLng is LatLng) {
-            widget.journal.latitude = latLng.latitude;
-            widget.journal.longitude = latLng.longitude;
-          }
-          journalStore.save(widget.journal);
-          IOHelper.writeJournalStore(journalStore);
-        });
+        _setLocation();
+        break;
+      case 'notification':
+        await _updateReminder();
         break;
       case 'debug':
         print(jsonEncode(widget.journal.document.toDelta().toJson()));
@@ -93,7 +215,7 @@ class _EditorScreenState extends State<EditorScreen> {
           children: [
             Icon(
               Icons.save,
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(width: 8),
             Text(
@@ -133,6 +255,24 @@ class _EditorScreenState extends State<EditorScreen> {
           ],
         ),
         value: 'setLocation',
+      ),
+      DropdownMenuItem(
+        child: Row(
+          children: [
+            Icon(
+                widget.journal.notificationId != null
+                    ? Icons.notifications
+                    : Icons.notifications_none,
+                color: Theme.of(context).primaryColor),
+            const SizedBox(width: 8),
+            Text(
+                widget.journal.notificationId != null
+                    ? 'Clear Reminder'
+                    : 'Set Reminder',
+                style: Theme.of(context).textTheme.button),
+          ],
+        ),
+        value: 'notification',
       ),
       DropdownMenuItem(
         child: Row(
@@ -242,6 +382,15 @@ class _EditorScreenState extends State<EditorScreen> {
       selection: const TextSelection.collapsed(offset: 0),
       keepStyleOnNewLine: false,
     );
+
+    // Clear invalid notifications from journal
+    notificationsPlugin.pendingNotificationRequests().then((value) {
+      if (!value
+          .any((element) => element.id != widget.journal.notificationId)) {
+        widget.journal.notificationId = null;
+        _save();
+      }
+    });
 
     return Scaffold(
       appBar: appBar(context),
