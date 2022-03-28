@@ -33,6 +33,7 @@ dependencies:
   cupertino_icons: ^1.0.4
   tuple: ^2.0.0
   device_info_plus: ^3.2.2
+  url_launcher: ^6.0.20
   # Editor
   flutter_quill:
     git:

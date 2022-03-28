@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:tuple/tuple.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EditorScreen extends StatefulWidget {
   const EditorScreen({Key? key, required this.journal}) : super(key: key);
@@ -114,6 +115,9 @@ class _EditorScreenState extends State<EditorScreen> {
       if (latLng is LatLng) {
         widget.journal.latitude = latLng.latitude;
         widget.journal.longitude = latLng.longitude;
+      } else {
+        widget.journal.latitude = null;
+        widget.journal.longitude = null;
       }
       journalStore.save(widget.journal);
       IOHelper.writeJournalStore(journalStore);
@@ -198,6 +202,11 @@ class _EditorScreenState extends State<EditorScreen> {
         break;
       case 'notification':
         await _updateReminder();
+        break;
+      case 'bible':
+        if (!await launch('https://www.bible.com/bible/')) {
+          throw 'Could not launch Bible website';
+        }
         break;
       case 'debug':
         print(jsonEncode(widget.journal.document.toDelta().toJson()));
