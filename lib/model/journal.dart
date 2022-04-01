@@ -15,9 +15,10 @@ class Journal {
   String title;
   quill.Document document;
   late DateTime dateCreated = DateTime.now();
-  // TODO Latitude/longitude
   double? latitude;
   double? longitude;
+  String? passwordHash;
+  DateTime? calendarDate;
   // TODO Reminders/notifications
 
   Journal({required this.title, required this.document});

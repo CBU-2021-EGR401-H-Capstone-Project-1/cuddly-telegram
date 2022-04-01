@@ -14,7 +14,11 @@ Journal _$JournalFromJson(Map<String, dynamic> json) => Journal(
       ..id = json['id'] as String
       ..dateCreated = DateTime.parse(json['dateCreated'] as String)
       ..latitude = (json['latitude'] as num?)?.toDouble()
-      ..longitude = (json['longitude'] as num?)?.toDouble();
+      ..longitude = (json['longitude'] as num?)?.toDouble()
+      ..passwordHash = json['passwordHash'] as String?
+      ..calendarDate = json['calendarDate'] == null
+          ? null
+          : DateTime.parse(json['calendarDate'] as String);
 
 Map<String, dynamic> _$JournalToJson(Journal instance) => <String, dynamic>{
       'id': instance.id,
@@ -23,4 +27,6 @@ Map<String, dynamic> _$JournalToJson(Journal instance) => <String, dynamic>{
       'dateCreated': instance.dateCreated.toIso8601String(),
       'latitude': instance.latitude,
       'longitude': instance.longitude,
+      'passwordHash': instance.passwordHash,
+      'calendarDate': instance.calendarDate?.toIso8601String(),
     };

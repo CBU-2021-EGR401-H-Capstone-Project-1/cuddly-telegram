@@ -27,22 +27,45 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  # Flutter
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.4
+  tuple: ^2.0.0
+  device_info_plus: ^3.2.2
+  # Editor
   flutter_quill:
     git:
       url: https://github.com/singerdmx/flutter-quill.git
       ref: upgrade
+  # Data Model
   provider: ^6.0.2
   json_annotation: ^4.4.0
   path_provider: ^2.0.8
-  permission_handler: ^8.3.0
   uuid: ^3.0.5
   intl: ^0.17.0
+  # Google Maps
+  permission_handler: ^8.3.0
   google_maps_flutter: ^2.1.1
   geolocator: ^8.1.1
-  tuple: ^2.0.0
+  # Cryptography
+  dart_jsonwebtoken: ^2.4.0
+  cryptography: ^2.0.5
+  cryptlib: ^0.0.3
+  crypto_keys: ^0.3.0
+  aes_crypt: ^0.1.1
+  fast_rsa: ^3.4.0
+  basic_utils: ^4.2.0
+  encrypt: ^5.0.1
+  rsa_encrypt: ^2.0.0
+  pointycastle: ^3.5.1
+  asn1lib: ^1.1.0
+  crypton: ^2.0.3
+  archive: ^3.2.1
+  flutter_aes_ecb_pkcs5: ^0.1.2
+  crypto: ^3.0.1
+  cryptoutils: ^0.5.0
+  crypt: ^4.2.1
 
 dev_dependencies:
   flutter_test:
