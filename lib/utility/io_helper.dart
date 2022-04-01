@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cuddly_telegram/encrypt/aes_rsa_encrypt.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:cuddly_telegram/encrypt/aes_rsa_encrypt.dart';
 
 class IOHelper {
   static final AppEncrypt encrypt = AppEncrypt();
@@ -13,7 +13,6 @@ class IOHelper {
   /// On iOS, this uses the `NSDocumentDirectory` API.
   static Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
-    print(directory.path);
     return directory.path;
   }
 
