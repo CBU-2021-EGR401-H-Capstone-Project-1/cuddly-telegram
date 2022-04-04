@@ -8,6 +8,8 @@ import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:cuddly_telegram/widgets/editor_screen/add_calendar_date_dialog.dart';
 
 class EditorScreen extends StatefulWidget {
   const EditorScreen({Key? key, required this.journal}) : super(key: key);
@@ -34,6 +36,26 @@ class _EditorScreenState extends State<EditorScreen> {
         IOHelper.writeJournalStore(
             Provider.of<JournalStore>(context, listen: false));
         Navigator.of(context).pop();
+        break;
+
+      case 'calendar':
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          useSafeArea: true,
+          builder: (context) {
+            return AddDateDialog(
+              journal: widget.journal,
+              onSavePressed: (date) {
+                widget.journal.calendarDate = date;
+                final journalStore =
+                    Provider.of<JournalStore>(context, listen: false);
+                journalStore.save(widget.journal);
+                IOHelper.writeJournalStore(journalStore);
+              },
+            );
+          },
+        );
         break;
       case 'editTitle':
         showDialog(

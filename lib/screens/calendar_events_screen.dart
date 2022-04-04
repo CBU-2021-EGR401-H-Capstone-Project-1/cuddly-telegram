@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final _sampleEvents = calendarEvents();
+    final _sampleEvents = calendarEvents(context);
     final cellCalendarPageController = CellCalendarPageController();
     final page = _pages[_selectedIndex]['page'] as Widget;
 
@@ -126,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
         )
       ]),
       body: FutureBuilder<List<CalendarEvent>>(
-          initialData: [],
+          // initialData: [],
           future: _sampleEvents,
           builder: (context, snapshot) {
             return CellCalendar(

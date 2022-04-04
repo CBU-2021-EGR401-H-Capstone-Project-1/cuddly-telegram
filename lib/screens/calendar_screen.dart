@@ -1,5 +1,7 @@
+import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 List _months = [
   'jan',
@@ -18,8 +20,6 @@ List _months = [
 
 class Calendar extends StatelessWidget {
   const Calendar({Key? key}) : super(key: key);
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +48,10 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
+    final events = Provider.of<JournalStore>(context, listen: false)
+        .journals
+        .where((element) => element.calendarDate != null)
+        .toList();
     count = _now.month;
     currentMon = _months[count - 1];
     return Scaffold(
