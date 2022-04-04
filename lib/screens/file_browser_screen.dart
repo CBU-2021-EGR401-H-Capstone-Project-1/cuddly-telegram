@@ -3,10 +3,9 @@ import 'dart:math';
 
 import 'package:cuddly_telegram/model/journal.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
+import 'package:cuddly_telegram/screens/calendar_screen.dart';
 import 'package:cuddly_telegram/screens/editor_screen.dart';
 import 'package:cuddly_telegram/screens/map_screen.dart';
-import 'package:cuddly_telegram/screens/calendar_events_screen.dart';
-
 import 'package:cuddly_telegram/utility/io_helper.dart';
 import 'package:cuddly_telegram/widgets/file_browser_screen/journal_item.dart';
 import 'package:flutter/material.dart';
@@ -235,7 +234,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
             child: ListTile(
               leading: Icon(
                 Icons.map,
-                color: theme.colorScheme.tertiary,
+                color: theme.colorScheme.secondary,
               ),
               title: const Text('Map'),
               onTap: () {
@@ -253,8 +252,8 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: ListTile(
               leading: Icon(
-                Icons.map,
-                color: theme.colorScheme.tertiary,
+                Icons.calendar_today,
+                color: Colors.orange,
               ),
               title: const Text('Calendar'),
               onTap: () {

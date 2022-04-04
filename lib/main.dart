@@ -1,29 +1,24 @@
+import 'dart:io' show Platform;
+
 import 'package:cuddly_telegram/model/journal_store.dart';
 import 'package:cuddly_telegram/model/local_style.dart';
+import 'package:cuddly_telegram/screens/calendar_screen.dart';
 import 'package:cuddly_telegram/screens/file_browser_screen.dart';
-import 'package:cuddly_telegram/screens/calendar_events_screen.dart';
 import 'package:cuddly_telegram/screens/map_screen.dart';
+import 'package:cuddly_telegram/utility/configuration.dart' as config
+    show calendar_api;
 import 'package:cuddly_telegram/widgets/localized_style.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
-
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:googleapis_auth/googleapis_auth.dart';
-import 'package:cell_calendar/cell_calendar.dart';
-import 'package:cuddly_telegram/screens/sample_events.dart';
-import 'package:googleapis_auth/auth_io.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:googleapis/calendar/v3.dart' as v3;
-import 'package:cuddly_telegram/utility/configuration.dart' as config
-    show calendar_api;
-
-import 'package:cuddly_telegram/model/journal_store.dart';
-import 'package:cuddly_telegram/screens/file_browser_screen.dart';
+import 'package:googleapis_auth/auth_io.dart';
+import 'package:googleapis_auth/googleapis_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
