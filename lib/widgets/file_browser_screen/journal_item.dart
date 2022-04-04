@@ -40,37 +40,50 @@ class JournalItem extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleMedium,
                 textAlign: TextAlign.start,
                 maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 10),
               Text(
                 DateFormat.yMMMd(Platform.localeName)
                     .format(journal.dateCreated),
                 style: Theme.of(context).textTheme.labelSmall,
               ),
-              const SizedBox(height: 10),
-              Text(
-                journal.document.toPlainText(),
-                style: Theme.of(context).textTheme.bodySmall,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 5,
+              Expanded(
+                child: Text(
+                  journal.document.toPlainText(),
+                  style: Theme.of(context).textTheme.bodySmall,
+                  overflow: TextOverflow.fade,
+                ),
               ),
-              const Spacer(),
-              Row(
-                children: [
-                  if (journal.latitude != null && journal.longitude != null)
+              IntrinsicHeight(
+                child: Row(
+                  children: [
+                    if (journal.latitude != null && journal.longitude != null)
+                      const Icon(
+                        Icons.location_pin,
+                        size: 16,
+                        color: Colors.green,
+                      ),
+                    if (journal.calendarDate != null)
+                      const Icon(
+                        Icons.calendar_today,
+                        size: 16,
+                        color: Colors.blue,
+                      ),
+                    if (journal.notificationId != null)
+                      const Icon(
+                        Icons.notifications_active,
+                        size: 16,
+                        color: Colors.red,
+                      ),
+                    const Spacer(),
                     const Icon(
-                      Icons.location_pin,
+                      Icons.open_in_new_rounded,
                       size: 16,
-                      color: Colors.red,
+                      color: Colors.grey,
                     ),
-                  const Spacer(),
-                  const Icon(
-                    Icons.open_in_new_rounded,
-                    size: 16,
-                    color: Colors.grey,
-                  ),
-                ],
-              )
+                  ],
+                ),
+              ),
             ],
           ),
         ),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:cuddly_telegram/model/journal.dart';
@@ -11,6 +12,7 @@ import 'package:cuddly_telegram/widgets/file_browser_screen/journal_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 
 class FileBrowserScreen extends StatefulWidget {
   const FileBrowserScreen({Key? key}) : super(key: key);
@@ -21,6 +23,46 @@ class FileBrowserScreen extends StatefulWidget {
 }
 
 class _FileBrowserScreenState extends State<FileBrowserScreen> {
+  // Tuple fields: Title, Subtitle, Icon, Document JSON
+  static const List<Tuple5<String, String, IconData, String, Color>> templates =
+      [
+    Tuple5(
+      'Blank Journal',
+      'An empty journal to start with.',
+      Icons.create_rounded,
+      '',
+      Colors.green,
+    ),
+    Tuple5(
+      'New Journal',
+      'A journal for writing down your thoughts about your day.',
+      Icons.wb_sunny_rounded,
+      '[{"insert":"What I Did Today: \\nHow I Feel Today:\\nOther Comments: \\n"}]',
+      Colors.blue,
+    ),
+    Tuple5(
+      'New Bible Journal',
+      'A journal for writing down notes while studying the Bible.',
+      Icons.book_rounded,
+      '[{"insert":"Bible Passage:\\nNotes:\\n"}]',
+      Colors.amber,
+    ),
+    Tuple5(
+      'New Class Notes',
+      'A page for writing down academic notes.',
+      Icons.edit_rounded,
+      '[{"insert":"Subject: \\nDate: \\nNotes: \\n"}]',
+      Colors.deepOrange,
+    ),
+    Tuple5(
+      'New Task List',
+      'A simple list of to-do items.',
+      Icons.task_alt_rounded,
+      '[{"insert":"Tasks for Today:\\nThing 1"},{"insert":"\\n","attributes":{"list":"unchecked"}},{"insert":"Thing 2"},{"insert":"\\n","attributes":{"list":"unchecked"}},{"insert":"Thing 3"},{"insert":"\\n","attributes":{"list":"unchecked"}}]',
+      Colors.purple,
+    ),
+  ];
+
   /// The body of the screen. A grid populated with a number of `JournalItem`
   /// widgets equal to the number of journals in the `JournalStore` is created.
   Widget get body {
@@ -54,6 +96,65 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
     );
   }
 
+  DraggableScrollableSheet get bottomSheet {
+    return DraggableScrollableSheet(
+      maxChildSize: 0.9,
+      initialChildSize: 0.9,
+      expand: false,
+      snap: true,
+      snapSizes: const [0.9],
+      builder: (context, scrollController) {
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Text(
+                'Choose a Template',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: templates.length,
+                itemBuilder: ((context, index) {
+                  return ListTile(
+                    title: Text(templates[index].item1),
+                    subtitle: Text(
+                      templates[index].item2,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    leading: Icon(templates[index].item3,
+                        color: templates[index].item5),
+                    trailing: const Icon(Icons.add_rounded),
+                    isThreeLine: true,
+                    visualDensity: VisualDensity.comfortable,
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EditorScreen(
+                            journal: Journal(
+                                title: templates[index].item1,
+                                document: templates[index].item4.isNotEmpty
+                                    ? quill.Document.fromJson(
+                                        jsonDecode(templates[index].item4))
+                                    : quill.Document()),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   /// The app bar for the screen. A single add button creates a
   /// new journal entry and pushes to the editor screen.
   PreferredSizeWidget get appBar {
@@ -63,15 +164,16 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
         IconButton(
           icon: const Icon(Icons.add),
           color: Colors.white,
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => EditorScreen(
-                journal: Journal(
-                  title: 'New Journal',
-                  document: quill.Document(),
-                ),
+          onPressed: () => showModalBottomSheet(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(32.0),
+                topRight: Radius.circular(32.0),
               ),
             ),
+            isScrollControlled: true,
+            context: context,
+            builder: (context) => bottomSheet,
           ),
         )
       ],
@@ -87,7 +189,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
     return Drawer(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          bottomRight: Radius.circular(128.0),
+          bottomRight: Radius.circular(64.0),
         ),
       ),
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -96,13 +198,10 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                bottomRight: Radius.circular(32.0),
-              ),
               gradient: LinearGradient(
                 colors: [
                   theme.colorScheme.primary,
-                  theme.colorScheme.inversePrimary,
+                  theme.colorScheme.secondary.withOpacity(0.5),
                 ],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
@@ -193,16 +292,20 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
       ),
       drawer: drawer,
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => EditorScreen(
-              journal: Journal(
-                title: 'New Journal',
-                document: quill.Document(),
-              ),
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).cardColor,
+        ),
+        onPressed: () => showModalBottomSheet(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(32.0),
+              topRight: Radius.circular(32.0),
             ),
           ),
+          isScrollControlled: true,
+          context: context,
+          builder: (context) => bottomSheet,
         ),
       ),
     );

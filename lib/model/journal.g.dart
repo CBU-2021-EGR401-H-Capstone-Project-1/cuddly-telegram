@@ -17,7 +17,8 @@ Journal _$JournalFromJson(Map<String, dynamic> json) => Journal(
       ..longitude = (json['longitude'] as num?)?.toDouble()
       ..calendarDate = json['calendarDate'] == null
           ? null
-          : DateTime.parse(json['calendarDate'] as String);
+          : DateTime.parse(json['calendarDate'] as String)
+      ..notificationId = json['notificationId'] as int?;
 
 Map<String, dynamic> _$JournalToJson(Journal instance) => <String, dynamic>{
       'id': instance.id,
@@ -27,4 +28,5 @@ Map<String, dynamic> _$JournalToJson(Journal instance) => <String, dynamic>{
       'latitude': instance.latitude,
       'longitude': instance.longitude,
       'calendarDate': instance.calendarDate?.toIso8601String(),
+      'notificationId': instance.notificationId,
     };

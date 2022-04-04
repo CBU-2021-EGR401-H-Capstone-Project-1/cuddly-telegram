@@ -15,11 +15,10 @@ class Journal {
   String title;
   quill.Document document;
   late DateTime dateCreated = DateTime.now();
-  // TODO Latitude/longitude
   double? latitude;
   double? longitude;
-  // TODO Reminders/notifications
   DateTime? calendarDate;
+  int? notificationId;
 
   Journal({required this.title, required this.document});
 
@@ -30,7 +29,7 @@ class Journal {
 
   @override
   String toString() {
-    return 'Journal id=$id title=$title document=$document dateCreated=$dateCreated latitude=$latitude longitude=$longitude';
+    return 'Journal id=$id title=$title document=$document dateCreated=$dateCreated latitude=$latitude longitude=$longitude calendarDate=$calendarDate notificationId=$notificationId';
   }
 }
 

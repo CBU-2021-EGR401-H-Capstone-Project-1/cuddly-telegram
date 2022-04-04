@@ -1,6 +1,14 @@
+import 'package:cuddly_telegram/model/journal_store.dart';
+import 'package:cuddly_telegram/model/local_style.dart';
+import 'package:cuddly_telegram/screens/file_browser_screen.dart';
 import 'package:cuddly_telegram/screens/calendar_events_screen.dart';
 import 'package:cuddly_telegram/screens/map_screen.dart';
+import 'package:cuddly_telegram/widgets/localized_style.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'dart:io' show Platform;
@@ -62,6 +70,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    final notifications = FlutterLocalNotificationsPlugin();
+    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initSettings = InitializationSettings(android: androidInit);
+    notifications.initialize(initSettings);
+    deviceInfo.androidInfo.then(
+      (androidInfo) {
+        if (defaultTargetPlatform == TargetPlatform.android &&
+            androidInfo.version.sdkInt != null &&
+            androidInfo.version.sdkInt! >= 29) {
+          // Enable hybrid composition if the device is
+          // running Android 10 (Q) or greater.
+          // Hybrid composition will run poorly on devices running
+          // operating systems before 10 (Q).
+          AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
+        }
+      },
+    );
+
     const TextTheme textTheme = TextTheme(
       displayLarge: TextStyle(fontSize: 57.0, fontFamily: 'Abril Fatface'),
       displayMedium: TextStyle(fontSize: 45, fontFamily: 'Abril Fatface'),
@@ -93,26 +120,39 @@ class MyApp extends StatelessWidget {
       bodySmall: TextStyle(fontSize: 12, fontFamily: 'Fira Sans'),
     );
 
-    final ThemeData theme = ThemeData(
-      brightness: Brightness.light,
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-      fontFamily: 'Fira Sans',
-      textTheme: textTheme,
-    );
-
     var routes = {
       FileBrowserScreen.routeName: (ctx) => const FileBrowserScreen(),
       MapScreen.routeName: (ctx) => const MapScreen(),
       MyHomePage.routeName: (ctx) => const MyHomePage(),
     };
 
-    return ChangeNotifierProvider(
-      create: (context) => JournalStore({}),
-      child: MaterialApp(
-        title: 'Journal',
-        theme: theme,
-        routes: routes,
-        initialRoute: FileBrowserScreen.routeName,
+    return LocalizedStyle(
+      child: Consumer<LocalStyle>(
+        builder: (ctx, style, wdgt) {
+          final ThemeData theme = ThemeData(
+            brightness: Brightness.light,
+            colorScheme: const ColorScheme.light().copyWith(
+              background: style.backgroundColor,
+              surface: style.backgroundColor,
+              onSecondary: style.foregroundColor,
+              onBackground: style.foregroundColor,
+              onSurface: style.foregroundColor,
+              onError: style.foregroundColor,
+            ),
+            fontFamily: 'Fira Sans',
+            textTheme: textTheme,
+          );
+
+          return ChangeNotifierProvider(
+            create: (context) => JournalStore({}),
+            child: MaterialApp(
+              title: 'Journal',
+              theme: theme,
+              routes: routes,
+              initialRoute: FileBrowserScreen.routeName,
+            ),
+          );
+        },
       ),
     );
   }
