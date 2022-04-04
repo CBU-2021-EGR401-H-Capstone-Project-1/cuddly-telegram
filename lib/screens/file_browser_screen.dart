@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:cuddly_telegram/model/journal.dart';
 import 'package:cuddly_telegram/model/journal_store.dart';
+import 'package:cuddly_telegram/screens/calendar_screen.dart';
 import 'package:cuddly_telegram/screens/editor_screen.dart';
 import 'package:cuddly_telegram/screens/map_screen.dart';
 import 'package:cuddly_telegram/utility/io_helper.dart';
@@ -233,12 +234,31 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
             child: ListTile(
               leading: Icon(
                 Icons.map,
-                color: theme.colorScheme.tertiary,
+                color: theme.colorScheme.secondary,
               ),
               title: const Text('Map'),
               onTap: () {
                 navigator.pop();
                 navigator.pushNamed(MapScreen.routeName);
+              },
+              tileColor: Theme.of(context).colorScheme.onPrimary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(128.0),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ListTile(
+              leading: Icon(
+                Icons.calendar_today,
+                color: Colors.orange,
+              ),
+              title: const Text('Calendar'),
+              onTap: () {
+                navigator.pop();
+                navigator.pushNamed(MyHomePage.routeName);
               },
               tileColor: Theme.of(context).colorScheme.onPrimary,
               shape: RoundedRectangleBorder(

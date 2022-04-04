@@ -17,6 +17,8 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:cuddly_telegram/widgets/editor_screen/add_calendar_date_dialog.dart';
 
 class EditorScreen extends StatefulWidget {
   const EditorScreen({Key? key, required this.journal}) : super(key: key);
@@ -193,6 +195,26 @@ class _EditorScreenState extends State<EditorScreen> {
         break;
       case 'delete':
         _delete();
+        break;
+
+      case 'calendar':
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          useSafeArea: true,
+          builder: (context) {
+            return AddDateDialog(
+              journal: widget.journal,
+              onSavePressed: (date) {
+                widget.journal.calendarDate = date;
+                final journalStore =
+                    Provider.of<JournalStore>(context, listen: false);
+                journalStore.save(widget.journal);
+                IOHelper.writeJournalStore(journalStore);
+              },
+            );
+          },
+        );
         break;
       case 'editTitle':
         _updateTitle();
